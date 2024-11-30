@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white flex items-center justify-center h-screen">
+    <div class="flex w-full max-w-4xl">
+        <div class="w-1/2 flex items-center justify-center">
+            <img src="https://storage.googleapis.com/a1aa/image/o2OIgDdzTv6AOJcGeYeZ9jQLEflHW1DGHpNnLxwoBShCXMnnA.jpg" alt="Illustration" class="w-full h-auto" width="400" height="600"/>
+        </div>
+        <div class="w-1/2 flex flex-col justify-center px-12">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <img src="LOGO.jpg" alt="Logo" class="mr-2" width="40" height="40"/>
+                    <span class="text-xl font-semibold">JK PLACEMENT</span>
+                </div>
+                <span class="text-gray-500">Asite Product System</span>
+            </div>
+            <h1 class="text-2xl font-semibold mb-2">Login to your account</h1>
+            <p class="text-gray-600 mb-6">Please enter your credentials to log in.</p>
+            <form method="POST" action="{{ url_for('login') }}">
+                E<!--mail Field -->
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required/>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required/>
+                </div>
+                
+                
+                Submit Button
+                <button type="submit" a href="{{url_for('dashboard')}}"  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800">Log In</button>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-gray-600">
+                Don't have an account? <a href="{{ url_for('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Sign Up</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <form action="{{ url_for('login') }}" method="POST">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <a href="{{ url_for('index') }}">Register</a>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html> -->

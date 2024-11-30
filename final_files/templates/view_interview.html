@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>View Interview Experiences</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-lg">
+      <div class="p-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <img src="LOGO.jpg" alt="Logo" class="w-full h-full object-cover"/>
+          </div>
+          <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
+        </div>
+      </div>
+      <nav class="mt-10">
+        <a href="{{ url_for('dashboard') }}" class="flex items center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-tasks mr-3"></i>
+          <span>Home</span>
+        <a href="{{ url_for('view_interviews') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-clock mr-3"></i>
+          <span>View Interview Experiences</span>
+        </a>
+        <a href="{{ url_for('submit_interview') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-edit mr-3"></i>
+          <span>Submit Interview Experience</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col p-6">
+      <h3 class="text-lg font-semibold mb-4">Interview Experiences</h3>
+      {% if experiences %}
+        {% for experience in experiences %}
+          <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-user-circle text-blue-500 text-3xl"></i>
+                <div>
+                  <h3 class="font-semibold text-xl">{{ experience.stud_name }}</h3>
+                  <p class="text-sm text-gray-500">Company: {{ experience.comp_name }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4">
+              <h4 class="font-semibold text-gray-700">Interview Experience:</h4>
+              <p class="text-gray-600">{{ experience.exp_text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-sm text-gray-500">No interview experiences available.</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Apply for Position</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Custom animation for the green tick */
+    .tick-animation {
+      animation: fadeIn 2s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Main Content Area -->
+  <div class="flex justify-center items-center h-screen">
+    {% if applied %}
+      <!-- Success Message with Green Check -->
+      <div id="successMessage" class="flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-lg">
+        <i class="fas fa-check-circle text-green-500 text-6xl mb-4 tick-animation"></i>
+        <h2 class="text-xl font-semibold text-green-500">Applied Successfully!</h2>
+      </div>
+    {% else %}
+      <!-- Apply Form -->
+      <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-semibold text-center mb-4">Apply for Position</h2>
+        <form method="POST" action="{{ url_for('apply') }}" enctype="multipart/form-data">
+          <!-- Hidden fields for company_id and job_role -->
+          <input type="hidden" name="company_id" value="{{ company_id }}">
+          <input type="hidden" name="job_role" value="{{ job_role }}">
+
+          <!-- Name Field -->
+          <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input type="text" id="name" name="name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Your Full Name"/>
+          </div>
+
+          <!-- Email ID Field -->
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email ID</label>
+            <input type="email" id="email" name="email" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="youremail@example.com"/>
+          </div>
+
+          <!-- Alternate Email ID Field -->
+          <div class="mb-4">
+            <label for="alt_email" class="block text-sm font-medium text-gray-700">Alternate Email ID</label>
+            <input type="email" id="alt_email" name="alt_email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Alternate email (optional)"/>
+          </div>
+
+          <!-- LinkedIn URL Field -->
+          <div class="mb-4">
+            <label for="linkedin_url" class="block text-sm font-medium text-gray-700">LinkedIn URL</label>
+            <input type="url" id="linkedin_url" name="linkedin_url" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.linkedin.com/in/yourname"/>
+          </div>
+
+          <!-- GitHub URL Field -->
+          <div class="mb-4">
+            <label for="github_url" class="block text-sm font-medium text-gray-700">GitHub URL</label>
+            <input type="url" id="github_url" name="github_url" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="https://github.com/yourusername"/>
+          </div>
+
+          
+
+          <!-- Apply Button -->
+          <div class="mt-6">
+            <button type="submit" class="w-full bg-blue-500 text-white font-semibold p-3 rounded-md shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+              Apply for Position
+            </button>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    // Redirect after 4 seconds when application is submitted
+    {% if applied %}
+      setTimeout(function() {
+        window.location.href = "{{ url_for('task_list') }}";  // Redirect to the original page (e.g., task list)
+      }, 4000);
+    {% endif %}
+  </script>
+</body>
+</html>

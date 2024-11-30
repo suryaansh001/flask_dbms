@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Data</title>
+    <style>
+        .flash-messages {
+            list-style-type: none;
+            padding: 10px;
+            background-color: #f8d7da;
+            color: #721c24;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .flash-messages li {
+            padding: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Insert Data into the Database</h1>
+
+    <!-- Display Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('insert') }}" method="POST">
+        <label for="table_name">Select Table:</label>
+        <select name="table_name" id="table_name" onchange="updateForm()">
+            <option value="placement">Placement</option>
+            <option value="company">Company</option>
+            <option value="job_role">Job Role</option>
+        </select><br><br>
+
+        <!-- Placement Form -->
+        <div id="placement_form" style="display:none;">
+            <h2>Placement Data</h2>
+            <label for="plac_month">Placement Month:</label>
+            <input type="text" id="plac_month" name="plac_month" required><br><br>
+
+            <label for="role_name">Role Name:</label>
+            <input type="text" id="role_name" name="role_name" required><br><br>
+
+            <label for="stud_id">Student ID:</label>
+            <input type="text" id="stud_id" name="stud_id" required><br><br>
+
+            <label for="comp_id">Company ID (Optional):</label>
+            <input type="text" id="comp_id" name="comp_id"><br><br>
+        </div>
+
+        <!-- Company Form -->
+        <div id="company_form" style="display:none;">
+            <h2>Company Data</h2>
+            <label for="comp_name">Company Name:</label>
+            <input type="text" id="comp_name" name="comp_name" required><br><br>
+
+            <label for="contact_no">Contact Number:</label>
+            <input type="text" id="contact_no" name="contact_no" required><br><br>
+
+            <label for="linkedin_id">LinkedIn ID:</label>
+            <input type="text" id="linkedin_id" name="linkedin_id" required><br><br>
+
+            <label for="comp_email">Company Email:</label>
+            <input type="email" id="comp_email" name="comp_email" required><br><br>
+        </div>
+
+        <!-- Job Role Form -->
+        <div id="job_role_form" style="display:none;">
+            <h2>Job Role Data</h2>
+            <label for="role_name">Role Name:</label>
+            <input type="text" id="role_name" name="role_name" required><br><br>
+
+            <label for="job_desc">Job Description:</label>
+            <textarea id="job_desc" name="job_desc" required></textarea><br><br>
+
+            <label for="job_type">Job Type:</label>
+            <input type="text" id="job_type" name="job_type" required><br><br>
+
+            <label for="eligibility_criteria">Eligibility Criteria:</label>
+            <input type="text" id="eligibility_criteria" name="eligibility_criteria" required><br><br>
+
+            <label for="salary_offered">Salary Offered:</label>
+            <input type="text" id="salary_offered" name="salary_offered" required><br><br>
+
+            <label for="comp_id">Company ID:</label>
+            <input type="text" id="comp_id" name="comp_id" required><br><br>
+        </div>
+
+        <button type="submit">Insert Data</button>
+    </form>
+
+    <script>
+        function updateForm() {
+            // Hide all forms initially
+            document.getElementById('placement_form').style.display = 'none';
+            document.getElementById('company_form').style.display = 'none';
+            document.getElementById('job_role_form').style.display = 'none';
+
+            // Get the selected table
+            var tableName = document.getElementById('table_name').value;
+
+            // Show the form for the selected table
+            if (tableName === 'placement') {
+                document.getElementById('placement_form').style.display = 'block';
+            } else if (tableName === 'company') {
+                document.getElementById('company_form').style.display = 'block';
+            } else if (tableName === 'job_role') {
+                document.getElementById('job_role_form').style.display = 'block';
+            }
+        }
+
+        // Initialize the form based on the default selection
+        window.onload = updateForm;
+    </script>
+
+</body>
+</html>

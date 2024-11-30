@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Placement Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-lg">
+      <div class="p-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
+
+          </div>
+          <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
+        </div>
+      </div>
+      <nav class="mt-10">
+        <a href="{{ url_for('project') }}" class="flex items-center p-3 text-gray-700 bg-gray-200">
+          <i class="fas fa-tasks mr-3"></i>
+          <span>Placement Records</span>
+        </a>
+        <a href="{{ url_for('task_list') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-check-circle mr-3"></i>
+          <span>Job Openings</span>
+        </a>
+        <a href="{{ url_for('submit_interview') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-clock mr-3"></i>
+          <span>Interview Experiences</span>
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-chart-line mr-3"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('settings') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-cog mr-3"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-col flex-grow p-6">
+      <h1 class="text-3xl font-bold mb-6">Placement Records</h1>
+      
+      <!-- Placement Records Table -->
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="py-3 px-6 text-left font-semibold text-gray-700">Company Name</th>
+            <th class="py-3 px-6 text-left font-semibold text-gray-700">Job Role</th>
+            <th class="py-3 px-6 text-left font-semibold text-gray-700">Month of Placement Drive</th>
+            <th class="py-3 px-6 text-left font-semibold text-gray-700">Number of People Recruited</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Hardcoded Data for Placement Records -->
+          <tr class="border-b border-gray-300">
+            <td class="py-3 px-6">Company A</td>
+            <td class="py-3 px-6">Software Engineer</td>
+            <td class="py-3 px-6">September 2024</td>
+            <td class="py-3 px-6">50</td>
+          </tr>
+          <tr class="border-b border-gray-300">
+            <td class="py-3 px-6">Company B</td>
+            <td class="py-3 px-6">Data Analyst</td>
+            <td class="py-3 px-6">October 2024</td>
+            <td class="py-3 px-6">30</td>
+          </tr>
+          <tr class="border-b border-gray-300">
+            <td class="py-3 px-6">Company C</td>
+            <td class="py-3 px-6">Product Manager</td>
+            <td class="py-3 px-6">November 2024</td>
+            <td class="py-3 px-6">20</td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+
+</body>
+</html>

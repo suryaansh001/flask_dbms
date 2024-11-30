@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Register Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-lg">
+      <div class="p-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <img src="LOGO.jpg" alt="Logo" class="w-full h-full object-cover"/>
+          </div>
+          <span class="text-xl font-semibold">Admin Panel</span>
+        </div>
+      </div>
+      <nav class="mt-10">
+        <a href="{{ url_for('admin_dashboard') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-tasks mr-3"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('register_admin') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-user-plus mr-3"></i>
+          <span>Register Admin</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col p-6">
+      <h3 class="text-lg font-semibold mb-4">Register New Admin</h3>
+      <form method="POST">
+        <div class="mb-4">
+          <label for="admin_id" class="block text-gray-700">Admin ID</label>
+          <input type="text" id="admin_id" name="admin_id" class="mt-2 p-2 border rounded w-full" required />
+        </div>
+
+        <div class="mb-4">
+          <label for="email" class="block text-gray-700">Email</label>
+          <input type="email" id="email" name="email" class="mt-2 p-2 border rounded w-full" required />
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700">Password</label>
+          <input type="password" id="password" name="password" class="mt-2 p-2 border rounded w-full" required />
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Register Admin</button>
+      </form>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mt-4">
+            {% for category, message in messages %}
+              <div class="text-{{ category == 'success' and 'green' or 'red' }}-600">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</body>
+</html>

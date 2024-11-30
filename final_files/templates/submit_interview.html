@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Submit Interview Experience</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-lg">
+      <div class="p-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-32 h-32 object-cover scale-105"/>
+
+          </div>
+          <span class="text-xl font-semibold">JKLU Placement Portal</span>
+        </div>
+      </div>
+      
+        
+      <nav class="mt-10">
+        <a href="{{ url_for('dashboard') }}" class="flex items center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-tasks mr-3"></i>
+          <span>Home</span>
+        </a>
+        <a href="{{ url_for('view_interviews') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-clock mr-3"></i>
+          <span>View Interview Experiences</span>
+        </a>
+        <a href="{{ url_for('submit_interview') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-edit mr-3"></i>
+          <span>Submit Interview Experience</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col p-6">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-4">
+            {% for category, message in messages %}
+              <div class="p-4 mb-4 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      
+      <h3 class="text-lg font-semibold mb-4">Submit Your Interview Experience</h3>
+      <form method="POST">
+        <div class="mb-4">
+          <label for="stud_name" class="block text-gray-700">Student Name</label>
+          <input type="text" id="stud_name" name="stud_name" class="mt-2 p-2 border rounded w-full" required />
+        </div>
+        
+        <div class="mb-4">
+          <label for="comp_name" class="block text-gray-700">Company Name</label>
+          <input type="text" id="comp_name" name="comp_name" class="mt-2 p-2 border rounded w-full" required />
+        </div>
+        
+        <div class="mb-4">
+          <label for="exp_text" class="block text-gray-700">Interview Experience</label>
+          <textarea id="exp_text" name="exp_text" class="mt-2 p-2 border rounded w-full" required></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

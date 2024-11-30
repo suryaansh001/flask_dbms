@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Upload CSV and View Graphs</h1>
+
+    <!-- File Upload Form -->
+    <form id="uploadForm">
+        <input type="file" name="file" id="fileInput" accept=".csv" />
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Charts -->
+    <canvas id="internshipChart"></canvas>
+    <canvas id="fullTimeChart"></canvas>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+
+        uploadForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Process data for charts
+                    const streams = data.streams;
+                    const internships = data.internships;
+                    const fullTimeOffers = data.full_time_offers;
+
+                    // Update Charts
+                    updateChart('internshipChart', 'Internships by Stream', streams, internships);
+                    updateChart('fullTimeChart', 'Full-Time Offers by Stream', streams, fullTimeOffers);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function updateChart(canvasId, title, labels, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: data,
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: title
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
