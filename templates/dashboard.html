@@ -1,0 +1,123 @@
+{% extends 'body.html' %}
+
+{% block content %}
+<!-- Header -->
+<div class="flex justify-between items-center mb-6">
+  <div class="relative w-1/3">
+    <input id="searchInput" class="w-full p-2 pl-10 border rounded-full focus:outline-none" placeholder="Search for anything..." type="text"/>
+    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+  </div>
+  <div class="flex items-center space-x-4">
+    <i class="fas fa-bell text-gray-400"></i>
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+      <div>
+        <span class="block font-semibold">{{ user['name'] }}</span>
+        <span class="block text-sm text-gray-500">{{ user['email'] }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Report -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-xl font-semibold mb-4">Performance Report</h2>
+  <div class="grid grid-cols-2 gap-6">
+    <div class="bg-gray-100 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold">Placement Drives</h3>
+      <canvas id="placementChart" width="400" height="400"></canvas>
+    </div>
+    <div class="bg-gray-100 p-4 rounded-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Placement Drives</h3>
+        <button class="bg-blue-100 text-blue-500 px-3 py-1 rounded-full">
+          This Week
+        </button>
+      </div>
+      <div class="mt-6">
+        <h3 class="text-xl font-semibold mb-4">Recent Placement Drives</h3>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          {% if placement_drives %}
+            <ul>
+              {% for drive in placement_drives %}
+                <li class="mb-4">
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <h4 class="font-semibold">{{ drive['comp_name'] }}</h4>
+                      <p class="text-sm text-gray-500">{{ drive['job_role'] }} - {{ drive['comp_email'] }}</p>
+                      <p class="text-sm text-gray-500">Contact: {{ drive['contact_no'] }} | LinkedIn: {{ drive['linkedin_id'] }}</p>
+                    </div>
+                    <span class="text-sm text-gray-400">{{ drive['created_at'] }}</span>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No recent placement drives available.</p>
+          {% endif %}
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task List -->
+<div class="mt-6">
+  <div id="taskList">
+    {% for task in tasks %}
+    <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex justify-between items-center task-item" data-task-title="{{ task.title }}">
+      <div class="flex items-center space-x-3">
+        <i class="fas fa-lightbulb text-yellow-500"></i>
+        <div>
+          <h3 class="font-semibold">{{ task.title }}</h3>
+          <p class="text-sm text-gray-500">{{ task.description }} - #{{ task.id }} Opened {{ task.opened_at }} by {{ task.creator }}</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button class="bg-green-100 text-green-500 px-4 py-2 rounded-full">View</button>
+        <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Get the data passed from Flask
+const chartLabels = {{ chart_labels | tojson }};
+const chartData = {{ chart_data | tojson }};
+
+// Create a Pie Chart using Chart.js
+const ctx = document.getElementById('placementChart').getContext('2d');
+const placementChart = new Chart(ctx, {
+    type: 'pie',  // Pie chart type
+    data: {
+        labels: chartLabels,  // Use the labels passed from Flask
+        datasets: [{
+            data: chartData,  // Use the data passed from Flask
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+            hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ": " + tooltipItem.raw + " Placements";
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

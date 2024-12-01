@@ -59,7 +59,7 @@
             <!-- Settings Form -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <form action="{{ url_for('settings') }}" method="POST">
-                    <!-- Non-editable fields (admin only) -->
+                    <!-- Non-editable fields (stud_name, cgpa) -->
                     <div class="mb-4">
                         <label for="stud_name" class="block text-sm font-medium text-gray-700">Name</label>
                         <input type="text" id="stud_name" name="stud_name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['stud_name'] }}" readonly>
@@ -70,17 +70,17 @@
                         <input type="text" id="cgpa" name="cgpa" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['cgpa'] }}" readonly>
                     </div>
 
+                    <!-- Editable fields (student can update these) -->
                     <div class="mb-4">
                         <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
-                        <input type="text" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['contact_no'] }}" readonly>
+                        <input type="text" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['contact_no'] }}">
                     </div>
 
                     <div class="mb-4">
                         <label for="course_id" class="block text-sm font-medium text-gray-700">Course ID</label>
-                        <input type="text" id="course_id" name="course_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['course_id'] }}" readonly>
+                        <input type="text" id="course_id" name="course_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['course_id'] }}">
                     </div>
 
-                    <!-- Editable fields (student can update these) -->
                     <div class="mb-4">
                         <label for="github_id" class="block text-sm font-medium text-gray-700">GitHub ID</label>
                         <input type="text" id="github_id" name="github_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['github_id'] }}">
