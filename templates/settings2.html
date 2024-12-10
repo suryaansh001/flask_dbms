@@ -12,10 +12,28 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .required:after {
+            content: "*";
+            color: red;
+        }
     </style>
 </head>
 
+    
 <body class="bg-gray-100">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="space-y-4 p-6">
+                {% for category, message in messages %}
+                    <div class="p-4 rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }} border-l-4">
+                        <p class="font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <!-- Layout: Sidebar + Main Content -->
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -64,41 +82,36 @@
                         <input type="text" id="stud_name" name="stud_name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500" value="{{ user['stud_name'] }}" readonly>
                     </div>
 
+                    <!-- Email (Required) -->
                     <div class="mb-4">
                         <label for="contact_no" class="block text-sm font-medium text-gray-700">Email-id</label>
-                        <input type="text" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500" value="{{ user['email'] }}">
+                        <input type="email" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500" value="{{ user['email'] }}" readonly>
                     </div>
 
+                    
 
-                    <!-- Add other fields here (e.g., course_id, github_id, etc.) -->
-                    <div class="mb-4">
-                        <label for="course_id" class="block text-sm font-medium text-gray-700">Course ID</label>
-                        <input type="text" id="course_id" name="course_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['course_id'] }}">
-                    </div>
-
+                    <!-- GitHub ID -->
                     <div class="mb-4">
                         <label for="github_id" class="block text-sm font-medium text-gray-700">GitHub ID</label>
                         <input type="text" id="github_id" name="github_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['github_id'] }}">
                     </div>
 
+                    <!-- LinkedIn ID (Required) -->
                     <div class="mb-4">
-                        <label for="linkedin_id" class="block text-sm font-medium text-gray-700">LinkedIn ID</label>
-                        <input type="text" id="linkedin_id" name="linkedin_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['linkedin_id'] }}">
+                        <label for="linkedin_id" class="block text-sm font-medium text-gray-700 ">LinkedIn ID</label>
+                        <input type="text" id="linkedin_id" name="linkedin_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['linkedin_id'] }}" >
                     </div>
 
+                    <!-- Portfolio Website -->
                     <div class="mb-4">
                         <label for="portfolio_web" class="block text-sm font-medium text-gray-700">Portfolio Website</label>
                         <input type="text" id="portfolio_web" name="portfolio_web" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['portfolio_web'] }}">
                     </div>
 
+                    <!-- Skills -->
                     <div class="mb-4">
                         <label for="skillset" class="block text-sm font-medium text-gray-700">Skills</label>
                         <input type="text" id="skillset" name="skillset" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['skillset'] }}">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="gmail_id" class="block text-sm font-medium text-gray-700">Gmail ID</label>
-                        <input type="email" id="gmail_id" name="gmail_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['gmail_id'] }}">
                     </div>
 
                     

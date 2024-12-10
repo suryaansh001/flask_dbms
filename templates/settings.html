@@ -12,6 +12,10 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .required:after {
+            content: "*";
+            color: red;
+        }
     </style>
 </head>
 
@@ -72,13 +76,13 @@
 
                     <!-- Editable fields (student can update these) -->
                     <div class="mb-4">
-                        <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
-                        <input type="text" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['contact_no'] }}">
+                        <label for="contact_no" class="block text-sm font-medium text-gray-700 required">Contact Number</label>
+                        <input type="text" id="contact_no" name="contact_no" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['contact_no'] }}" required>
                     </div>
 
                     <div class="mb-4">
-                        <label for="course_id" class="block text-sm font-medium text-gray-700">Course ID</label>
-                        <input type="text" id="course_id" name="course_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['course_id'] }}">
+                        <label for="course_id" class="block text-sm font-medium text-gray-700 required">Course ID</label>
+                        <input type="text" id="course_id" name="course_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['course_id'] }}" required>
                     </div>
 
                     <div class="mb-4">
@@ -87,8 +91,8 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="linkedin_id" class="block text-sm font-medium text-gray-700">LinkedIn ID</label>
-                        <input type="text" id="linkedin_id" name="linkedin_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['linkedin_id'] }}">
+                        <label for="linkedin_id" class="block text-sm font-medium text-gray-700 required">LinkedIn ID</label>
+                        <input type="text" id="linkedin_id" name="linkedin_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ user['linkedin_id'] }}" required>
                     </div>
 
                     <div class="mb-4">

@@ -182,27 +182,41 @@ def task_list():
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
-            # Fetch companies and their associated job roles from the company table
             query = """
-            SELECT c.comp_id, c.comp_name, c.contact_no, c.linkedin_id, c.comp_email, c.created_at, c.job_role
-            FROM company c
+            SELECT * FROM company c
             ORDER BY c.created_at DESC
             """
             cursor.execute(query)
             companies = cursor.fetchall()
-
-            # Debug: Print the fetched data
-            print("Fetched Companies with Job Roles:", companies)
-
     except Exception as e:
         print(f"Error: {e}")
         flash('Error fetching task list. Please try again.', 'error')
         companies = []
-
     finally:
         connection.close()
 
     return render_template('placementinfo2.html', companies=companies)
+
+@app.route('/company_details/<int:comp_id>')
+def company_details(comp_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Fetch company details based on comp_id
+            query = """
+            SELECT * FROM company WHERE comp_id = %s
+            """
+            cursor.execute(query, (comp_id,))
+            company = cursor.fetchone()
+    except Exception as e:
+        print(f"Error: {e}")
+        flash('Error fetching company details. Please try again.', 'error')
+        company = None
+    finally:
+        connection.close()
+
+    return render_template('company_details.html', company=company)
+
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
@@ -228,26 +242,43 @@ def settings():
 
             # Handling POST request to update user data
             if request.method == 'POST':
-                stud_name = request.form['stud_name']
-                contact_no = request.form['contact_no']
-                course_id = request.form['course_id']
-                github_id = request.form['github_id']
-                linkedin_id = request.form['linkedin_id']
-                portfolio_web = request.form['portfolio_web']
-                skillset = request.form['skillset']
-                gmail_id = request.form['gmail_id']
-                alternate_email = request.form['alternate_email']
+                # Retrieve form data, using .get() to avoid key errors if the field is missing
+                stud_name = request.form.get('stud_name')
+                contact_no = request.form.get('contact_no')
+                
+                github_id = request.form.get('github_id')
+                linkedin_id = request.form.get('linkedin_id')
+                portfolio_web = request.form.get('portfolio_web')
+                skillset = request.form.get('skillset')
 
-                # Update the editable fields
-                cursor.execute("""
-                    UPDATE student
-                    SET stud_name = %s, contact_no = %s, course_id = %s,
-                        github_id = %s, linkedin_id = %s, portfolio_web = %s, 
-                        skillset = %s, gmail_id = %s, alternate_email = %s, updated_at = NOW()
-                    WHERE stud_id = %s
-                """, (stud_name, contact_no, course_id, github_id, linkedin_id, portfolio_web,
-                      skillset, gmail_id, alternate_email, stud_id))
+                # Build the update query dynamically based on which fields are provided
+                update_query = "UPDATE student SET updated_at = NOW()"
+                values = []
 
+                
+                if github_id:
+                    update_query += ", github_id = %s"
+                    values.append(github_id)
+                if linkedin_id:
+                    update_query += ", linkedin_id = %s"
+                    values.append(linkedin_id)
+                if portfolio_web:
+                    update_query += ", portfolio_web = %s"
+                    values.append(portfolio_web)
+                if skillset:
+                    update_query += ", skillset = %s"
+                    values.append(skillset)
+
+                # Add the student ID to the values list for the WHERE clause
+                update_query += " WHERE stud_id = %s"
+                values.append(stud_id)
+
+                # Execute the query with dynamic values
+                cursor.execute(update_query, tuple(values))
+                flash('query GENERATEd', 'success')
+                print(f"Query: {cursor.mogrify(update_query, tuple(values))}")
+
+                # Commit the transaction
                 connection.commit()
 
                 flash('Your changes have been saved successfully!', 'success')
@@ -259,7 +290,8 @@ def settings():
         connection.close()
 
     # Render the settings page with the user data
-    return render_template('settings2.html', user=user)  # Pass the user data to the template
+    return render_template('settings2.html', user=user)
+# Pass the user data to the template
 
 
 @app.route('/apply', methods=['GET', 'POST'])

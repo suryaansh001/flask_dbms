@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,17 +53,24 @@
         </a>
       </nav>
     </div>
-
- 
-<body class="bg-gray-100">
-
-  <div class="container mx-auto p-6">
-    <h2 class="text-2xl font-semibold mb-4">Admin Dashboard</h2>
-    <div class="space-x-4">
-      <a href="{{ url_for('add_company') }}" class="bg-blue-500 text-white p-2 rounded">Add Company</a>
-      
-    </div>
+    <div class="mt-6">
+    <h3 class="text-xl font-semibold mb-4">Edit Student - {{ student.stud_name }}</h3>
+    <form action="{{ url_for('edit_student', student_id=student.stud_id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="stud_name" class="block font-semibold">Name</label>
+          <input type="text" name="stud_name" value="{{ student.stud_name }}" class="w-full p-2 border rounded" required />
+        </div>
+        <div>
+          <label for="cgpa" class="block font-semibold">CGPA</label>
+          <input type="text" name="cgpa" value="{{ student.cgpa }}" class="w-full p-2 border rounded" required />
+        </div>
+        <!-- Add more fields for portfolio_web, github_id, etc. -->
+  
+        <div class="col-span-2">
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button>
+        </div>
+      </div>
+    </form>
   </div>
-
-</body>
-</html>
+  

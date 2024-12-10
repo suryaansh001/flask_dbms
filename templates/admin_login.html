@@ -20,7 +20,7 @@
         <input type="password" id="password" name="password" class="w-full p-2 border rounded" required>
       </div>
       <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Login</button>
-      <div>
+      <div class="mt-4">
         <label>
           Don't have an account?
           <a href="{{ url_for('register_admin') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Register</a>
@@ -28,11 +28,12 @@
       </div>
     </form>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
         <div class="mt-4">
           {% for category, message in messages %}
-            <div class="text-{{ category == 'success' and 'green' or 'red' }}-600">{{ message }}</div>
+            <div class="text-{{ 'green' if category == 'success' else 'red' }}-600">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
