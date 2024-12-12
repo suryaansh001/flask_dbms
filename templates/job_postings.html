@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Postings</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-4">Available Job Postings</h2>
+        {% if approved_jobs %}
+            <div class="space-y-4">
+                {% for job in approved_jobs %}
+                    <div class="bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold">{{ job.title }}</h3>
+                        <p><strong>Company:</strong> {{ job.comp_name }}</p>
+                        <p><strong>Description:</strong> {{ job.description }}</p>
+                        <p><strong>Requirements:</strong> {{ job.requirements }}</p>
+                        <p><strong>Salary:</strong> {{ job.salary }}</p>
+                        <p><strong>Location:</strong> {{ job.location }}</p>
+                        <p><strong>Contact:</strong> <a href="mailto:{{ job.comp_email }}" class="text-blue-500">{{ job.comp_email }}</a></p>
+                        <p><strong>LinkedIn:</strong> <a href="{{ job.linkedin_id }}" class="text-blue-500" target="_blank">View Company Profile</a></p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">No job postings available at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

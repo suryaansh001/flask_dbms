@@ -1,32 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Performance Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Info</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
+    #dynamic-filters {
+      display: none;
     }
-    .dropdown-container {
-      position: relative;
-    }
-    .dropdown-content {
-      position: absolute;
-      top: 100%; /* Position below the dropdown */
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      display: none; /* Hidden by default */
-    }
-    .dropdown-content.show {
+
+    #dynamic-filters.show {
       display: block;
     }
   </style>
@@ -38,7 +23,7 @@
       <div class="p-6">
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
+            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover" />
           </div>
           <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
         </div>
@@ -67,187 +52,128 @@
       </nav>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="flex flex-col flex-grow p-6">
-      <!-- Filter Options -->
-      <div class="mb-4 dropdown-container">
-        <label for="filter-options" class="block text-sm font-medium text-gray-700">Filter Options</label>
-        <div class="relative">
-          <select id="filter-options" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" onchange="showFilterOptions()">
-            <option value="">Select Filter</option>
-            <option value="job_role">Job Role</option>
-            <option value="eligibility">Eligibility Criteria</option>
-            <option value="salary">Salary Range</option>
-          </select>
-          <!-- Dropdown will be shown here -->
-          <div id="dynamic-filters" class="dropdown-content"></div>
-        </div>
-      </div>
+    <!-- Main content -->
+    <div class="container mx-auto p-6">
+      <h1 class="text-2xl font-bold mb-6">Placement Information</h1>
+      <select id="filter-options" class="mb-4 p-2 border rounded shadow-sm">
+        <option value="">Select Filter</option>
+        <option value="job_role">Job Role</option>
+        <option value="eligibility">Eligibility</option>
+        <option value="salary">Salary</option>
+      </select>
+      <div id="dynamic-filters"></div>
 
       <!-- Search Bar -->
-      <div class="mb-4">
-        <label for="search-bar" class="block text-sm font-medium text-gray-700">Search</label>
-        <input type="text" id="search-bar" class="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" oninput="searchContent()" placeholder="Search for companies...">
+      <div class="mb-6">
+        <input id="searchInput"
+               type="text"
+               placeholder="Search by company name or job role..."
+               class="w-full p-2 border rounded shadow-sm">
       </div>
 
-      <!-- Company List Section -->
-      {% if companies %}
-        {% for company in companies %}
-          <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col company-box" data-job-role="{{ company.job_role }}" data-eligibility="{{ company.eligibility }}" data-description="{{ company.description }}">
-            <div class="flex items-center space-x-3">
-              <i class="fas fa-building text-blue-500"></i>
-              <div>
-                
-                  <h3 class="font-semibold">
-                    <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="text-black-600 hover:underline">
-                      {{ company.comp_name }}
-                    </a>
-                  </h3>
-                  
-                
-                <p class="text-sm text-gray-600">Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-600">{{ company.comp_email }}</a></p>
-                <p class="text-sm text-gray-600">salary: {{ company.salary }} </a></p>
-                <p class="text-sm text-gray-600">Eligibility: {{ company.eligibility }}</p>
-                <p class="text-xs text-gray-400">Last Date to Apply: {{ company.end_date }}</p>
-              </div>
+      <!-- Ongoing Companies Section -->
+      <div id="ongoingCompaniesSection">
+        <h2 class="text-xl font-semibold mb-4">Ongoing Companies</h2>
+        {% if ongoing_companies %}
+          {% set unique_job_roles = ongoing_companies | map(attribute='job_role') | list | unique %}
+          {% set unique_eligibilities = ongoing_companies | map(attribute='eligibility') | list | unique %}
+          {% set unique_salaries = ongoing_companies | map(attribute='salary') | list | unique %}
+          {% for company in ongoing_companies %}
+            <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4"
+                 data-name="{{ company.comp_name }}"
+                 data-role="{{ company.job_role }}"
+                 data-eligibility="{{ company.eligibility }}"
+                 data-salary="{{ company.salary }}">
+              <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
+              <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500">{{ company.comp_email }}</a></p>
+              <p>Job Role: {{ company.job_role }}</p>
+              <p>Eligibility: {{ company.eligibility }}</p>
+              <p>Salary: {{ company.salary }}</p>
+              <p>Last Date to Apply: {{ company.end_date.strftime('%Y-%m-%d') }}</p>
+              <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="text-blue-500 underline">
+                View Details
+              </a>
             </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-gray-500">No ongoing companies available.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
-           
-            <!-- Job Roles inside the company box -->
-            <div class="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
-              <h4 class="text-sm font-semibold mb-2">Job Roles:</h4>
-              {% if company.job_role %}
-                <ul>
-                  <li class="flex justify-between items-center">
-                    <span>{{ company.job_role }}</span>
-                    <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="text-blue-500 hover:underline">
-                      <button class="bg-blue-500 text-white px-4 py-2 rounded-full">Details</button>
-                    </a>
-                  </li>
-                </ul>
-              {% else %}
-                <p>No job roles available</p>
-              {% endif %}
-            </div>
-          </div> <!-- End of Company Box -->
-        {% endfor %}
-      {% else %}
-        <p class="text-sm text-gray-500">No companies available.</p>
-      {% endif %}
-    </div> <!-- End of Main Content Area -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterOptions = document.getElementById('filter-options');
+      const dynamicFilters = document.getElementById('dynamic-filters');
+      const searchInput = document.getElementById('searchInput');
 
-    <!-- JavaScript Functions -->
-    <script>
-      // Function to toggle dropdown visibility inside the company box
-      function toggleDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        dropdown.classList.toggle('hidden');
+      function filterCompanies() {
+        const searchText = searchInput.value.toLowerCase();
+        const companyCards = document.querySelectorAll('.company-card');
+
+        companyCards.forEach(card => {
+          const name = card.getAttribute('data-name').toLowerCase();
+          const role = card.getAttribute('data-role').toLowerCase();
+          const eligibility = card.getAttribute('data-eligibility').toLowerCase();
+          const salary = card.getAttribute('data-salary').toLowerCase();
+
+          const filterByJobRole = document.getElementById('job-role')?.value.toLowerCase() || '';
+          const filterByEligibility = document.getElementById('eligibility-filter')?.value.toLowerCase() || '';
+          const filterBySalary = document.getElementById('salary-filter')?.value.toLowerCase() || '';
+
+          const matchesSearch = name.includes(searchText) || role.includes(searchText);
+          const matchesJobRole = !filterByJobRole || role === filterByJobRole;
+          const matchesEligibility = !filterByEligibility || eligibility === filterByEligibility;
+          const matchesSalary = !filterBySalary || salary === filterBySalary;
+
+          card.style.display = matchesSearch && matchesJobRole && matchesEligibility && matchesSalary ? 'block' : 'none';
+        });
       }
 
-      // Function to show dynamic filter options
-      function showFilterOptions() {
-        const filterSelect = document.getElementById('filter-options');
-        const dynamicFilters = document.getElementById('dynamic-filters');
-        dynamicFilters.innerHTML = ''; // Clear previous options
-        const selectedValue = filterSelect.value;
+      function updateFilters() {
+        dynamicFilters.innerHTML = '';
+        const filterType = filterOptions.value;
 
-        if (selectedValue === 'job_role') {
+        if (filterType === 'job_role') {
           dynamicFilters.innerHTML = `
-            <label class='block text-sm font-medium text-gray-700'>Select Job Role</label>
-            <select id='job-role-filter' onchange='filterCompanies()' class='mt-1 block w-full pl-3 pr-10 py-2'>
-              <option value="">Select Job Role</option>
-              {% for company in companies %}
-                {% if company.job_role %}
-                  <option value='{{ company.job_role }}'>{{ company.job_role }}</option>
-                {% endif %}
+            <select id="job-role" class="mb-4 p-2 border rounded shadow-sm" onchange="filterCompanies()">
+              <option value="">All Roles</option>
+              {% for role in unique_job_roles %}
+                <option value="{{ role }}">{{ role }}</option>
               {% endfor %}
-            </select>`;
-        } else if (selectedValue === 'eligibility') {
+            </select>
+          `;
+        } else if (filterType === 'eligibility') {
           dynamicFilters.innerHTML = `
-            <label class='block text-sm font-medium text-gray-700'>Select Eligibility Criteria</label> 
-            <select id='eligibility-filter' onchange='filterCompanies()'class='mt-1 block w-full pl-3 pr-10 py-2'>
-              {% for company in companies %}
-                {% if company.eligibility %}
-                  <option value='{{ company.eligibility }}'>{{ company.eligibility }}</option> 
-                {% endif %}
+            <select id="eligibility-filter" class="mb-4 p-2 border rounded shadow-sm" onchange="filterCompanies()">
+              <option value="">All Eligibility</option>
+              {% for eligibility in unique_eligibilities %}
+                <option value="{{ eligibility }}">{{ eligibility }}</option>
               {% endfor %}
-            </select>`;
-        } else if (selectedValue === 'salary') {
+            </select>
+          `;
+        } else if (filterType === 'salary') {
           dynamicFilters.innerHTML = `
-            <label class='block text-sm font-medium text-gray-700'>Select Salary Range</label> 
-            <select id='salary-filter' onchange='filterCompanies()'class='mt-1 block w-full pl-3 pr-10 py-2'>
-              <option value='1LPA - 3LPA'>1 LPA - 3 LPA</option> 
-              <option value='4LPA - 7LPA'>4 LPA - 7 LPA</option> 
-              <option value='8LPA+'>8 LPA and above</option> 
-            </select>`;
+            <select id="salary-filter" class="mb-4 p-2 border rounded shadow-sm" onchange="filterCompanies()">
+              <option value="">All Salary Ranges</option>
+              {% for salary in unique_salaries %}
+                <option value="{{ salary }}">{{ salary }}</option>
+              {% endfor %}
+            </select>
+          `;
         }
 
-        dynamicFilters.classList.add('show'); // Show the dropdown
+        dynamicFilters.classList.add('show');
+        filterCompanies();
       }
 
-      // Function to filter companies based on selected criteria and search input
-      // Function to filter companies based on selected criteria and search input
-function filterCompanies() {
-  const jobRoleFilter = document.getElementById('job-role-filter') ? document.getElementById('job-role-filter').value.toLowerCase() : '';
-  const eligibilityFilter = document.getElementById('eligibility-filter') ? document.getElementById('eligibility-filter').value.toLowerCase() : '';
-  const salaryFilter = document.getElementById('salary-filter') ? document.getElementById('salary-filter').value.toLowerCase() : '';
-  
-  const searchInput = document.getElementById('search-bar').value.toLowerCase();
-  
-  const companyBoxes = document.querySelectorAll('.company-box');
+      // Expose filterCompanies to the global scope for onchange handlers
+      window.filterCompanies = filterCompanies;
 
-  // Parse salary range function
-  function parseSalaryRange(salaryString) {
-    const salaryParts = salaryString.split(' - ').map(s => parseInt(s.replace('LPA', '').trim())); // Convert '3 LPA' to number
-    return salaryParts.length === 2 ? salaryParts : null; // Return array of numbers or null if not a range
-  }
-
-  companyBoxes.forEach(box => {
-    const jobRole = box.getAttribute('data-job-role').toLowerCase();
-    const eligibility = box.getAttribute('data-eligibility').toLowerCase();
-    const companySalary = box.getAttribute('data-salary'); // Assume salary is stored in 'data-salary' attribute
-
-    const matchesRole = !jobRoleFilter || jobRole.includes(jobRoleFilter);
-    const matchesEligibility = !eligibilityFilter || eligibility.includes(eligibilityFilter);
-
-    let matchesSalary = true;
-    if (salaryFilter) {
-      const selectedRange = parseSalaryRange(salaryFilter);
-      const companyRange = parseSalaryRange(companySalary);
-
-      // If both ranges are available, check if the company's salary range is within the selected range
-      if (selectedRange && companyRange) {
-        matchesSalary = companyRange[0] >= selectedRange[0] && companyRange[1] <= selectedRange[1];
-      } else {
-        matchesSalary = false;
-      }
-    }
-
-    if ((matchesRole && matchesEligibility && matchesSalary) && 
-        (box.querySelector('h3').textContent.toLowerCase().includes(searchInput))) {
-      box.style.display = 'block';
-    } else {
-      box.style.display = 'none';
-    }
-  });
-}
-
-
-      // Function to search content based on input
-      function searchContent() {
-        filterCompanies(); // Call filter function to apply search as well
-      }
-
-      // Close the dropdown when clicking outside
-      document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('dynamic-filters');
-        if (!dropdown.contains(event.target) && !document.getElementById('filter-options').contains(event.target)) {
-          dropdown.classList.remove('show');
-        }
-
-      })
-      
-    
-    </script>
-  </body>
+      filterOptions.addEventListener('change', updateFilters);
+      searchInput.addEventListener('input', filterCompanies);
+    });
+  </script>
+</body>
 </html>

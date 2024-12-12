@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Login</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6 max-w-md">
+        <h2 class="text-2xl font-bold mb-4">Company Login</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-4 px-4 py-2 rounded {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('company_login') }}">
+            <div class="mb-4">
+                <label for="company_id" class="block text-sm font-medium text-gray-700">Company ID</label>
+                <input type="number" id="company_id" name="company_id" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" name="password" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Login</button>
+        </form>
+        <p class="mt-4 text-sm">
+            Don't have an account? <a href="{{ url_for('register_company') }}" class="text-blue-500">Register here</a>.
+        </p>
+    </div>
+</body>
+</html>

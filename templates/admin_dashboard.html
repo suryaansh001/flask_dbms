@@ -5,7 +5,6 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>{% block title %}JKLU PLACEMENT PORTAL{% endblock %}</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
@@ -21,10 +20,8 @@
     <div class="w-64 bg-white h-screen shadow-lg">
       <div class="p-6">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center ">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
             <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
-
-            <!-- <i class="fas fa-project-diagram text-white"></i> -->
           </div>
           <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
         </div>
@@ -50,19 +47,28 @@
           <i class="fas fa-cog mr-3"></i>
           <span>LogOut</span>
         </a>
+        <!-- New Links for Job Postings -->
+        <a href="{{ url_for('pending_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-hourglass-start mr-3"></i>
+          <span>Pending Job Postings</span>
+        </a>
+        <a href="{{ url_for('approved_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-check-circle mr-3"></i>
+          <span>Approved Job Postings</span>
+        </a>
       </nav>
     </div>
 
- 
-<body class="bg-gray-100">
-
-  <div class="container mx-auto p-6">
-    <h2 class="text-2xl font-semibold mb-4">Admin Dashboard</h2>
-    <div class="space-x-4">
-      <a href="{{ url_for('add_company') }}" class="bg-blue-500 text-white p-2 rounded">Add Company</a>
-      
+    <!-- Main Content -->
+    <div class="flex-1">
+      <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-semibold mb-4">Admin Dashboard</h2>
+        <div class="space-x-4">
+          <a href="{{ url_for('add_company') }}" class="bg-blue-500 text-white p-2 rounded">Add Company</a>
+          <!-- Add more dashboard widgets or links as needed -->
+        </div>
+      </div>
     </div>
   </div>
-
 </body>
 </html>

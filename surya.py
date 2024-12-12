@@ -177,6 +177,25 @@ def placement_records():
     
     return render_template('placement_record2.html')
 @app.route('/task_list')
+# def isactive(comp_id):
+#     try:
+#         connection = get_db_connection()
+#         with connection.cursor() as cursor:
+#             query = "SELECT end_date FROM company WHERE comp_id = %s"
+#             cursor.execute(query, (comp_id,))
+#             end_date = cursor.fetchone()
+#             if end_date>datetime.now():
+#                 return True
+#             else:
+#                 return False
+#     finally:
+
+#             return company['is_active']
+
+
+
+
+@app.route('/task_list')
 def task_list():
     # Fetch company data along with job roles
     connection = get_db_connection()
@@ -188,14 +207,36 @@ def task_list():
             """
             cursor.execute(query)
             companies = cursor.fetchall()
+
+            ongoing_companies = []
+            past_companies = []
+            
+            for company in companies:
+            # Check if end_date is None before comparing
+                if company['end_date'] is not None:
+                    if company['end_date'] < datetime.now():
+                        past_companies.append(company)  # Add to past drives if the drive has ended
+                    else:
+                        ongoing_companies.append(company)  # Add to ongoing drives if the drive is active
+                    
+                    # Update status to 'inactive' for past drives
+                    if company['end_date'] < datetime.now() and company['status'] != 'inactive':
+                        query = "UPDATE company SET status = %s WHERE comp_id = %s"
+                        cursor.execute(query, ("inactive", company['comp_id']))
+                        connection.commit()
+                   # Assuming companies with None end_date should be considered ongoing
+
+
     except Exception as e:
         print(f"Error: {e}")
         flash('Error fetching task list. Please try again.', 'error')
-        companies = []
+        ongoing_companies = []
+        past_companies = []
     finally:
         connection.close()
 
-    return render_template('placementinfo2.html', companies=companies)
+    return render_template('placementinfo.html', ongoing_companies=ongoing_companies, past_companies=past_companies)
+
 
 @app.route('/company_details/<int:comp_id>')
 def company_details(comp_id):
@@ -500,4 +541,4 @@ def logout():
     return redirect(url_for('login'))
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0', port=7000)

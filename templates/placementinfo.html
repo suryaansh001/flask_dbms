@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Performance Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Info</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
+    #dynamic-filters {
+      display: none;
+    }
+
+    #dynamic-filters.show {
+      display: block;
     }
   </style>
 </head>
@@ -20,66 +23,161 @@
       <div class="p-6">
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
-
+            <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover" />
           </div>
           <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
         </div>
       </div>
       <nav class="mt-10">
-        <a href="{{ url_for('project') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <a href="{{ url_for('project') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-300">
           <i class="fas fa-tasks mr-3"></i>
-          <span>Placement Drives</span>
-        </a>
-        <a href="{{ url_for('task_list') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
-          <i class="fas fa-check-circle mr-3"></i>
           <span>Placement Records</span>
         </a>
-        <a href="{{ url_for('submit_interview') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <a href="{{ url_for('task_list') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-300">
+          <i class="fas fa-check-circle mr-3"></i>
+          <span>Job Openings</span>
+        </a>
+        <a href="{{ url_for('submit_interview') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-300">
           <i class="fas fa-clock mr-3"></i>
           <span>Interview Experiences</span>
         </a>
-        <a href="{{ url_for('performance_report') }}" class="flex items-center p-3 text-gray-700 bg-gray-200">
+        <a href="{{ url_for('dashboard') }}" class="flex items-center p-3 text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all duration-300">
           <i class="fas fa-chart-line mr-3"></i>
-          <span>Performance Report</span>
+          <span>Dashboard</span>
         </a>
-        <a href="{{ url_for('settings') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <a href="{{ url_for('settings') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-300">
           <i class="fas fa-cog mr-3"></i>
           <span>Settings</span>
         </a>
       </nav>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex flex-1 flex-col p-6">
-      <!-- Task List Section -->
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-4">Company List</h3>
-        {% if tasks %}
-          {% for task in tasks %}
-            <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <i class="fas fa-building text-blue-500"></i>
-                <div>
-                  <h3 class="font-semibold">{{ task.comp_name }}</h3>
-                  <p class="text-sm text-gray-500">Contact: {{ task.contact_no }}</p>
-                  <p class="text-sm text-gray-500">Email: <a href="mailto:{{ task.comp_email }}" class="text-blue-600">{{ task.comp_email }}</a></p>
-                  <p class="text-sm text-gray-500">LinkedIn: <a href="{{ task.linkedin_id }}" target="_blank" class="text-blue-600">{{ task.linkedin_id }}</a></p>
-                  <p class="text-xs text-gray-400">Company ID: #{{ task.comp_id }} | Created: {{ task.created_at }}</p>
-                </div>
-              </div>
-              <div class="flex items-center space-x-3">
-                <button class="bg-blue-100 text-blue-500 px-4 py-2 rounded-full">View</button>
-                <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
-              </div>
+    <!-- Main content -->
+    <div class="container mx-auto p-6">
+      <h1 class="text-2xl font-bold mb-6">Placement Information</h1>
+      <select id="filter-options" class="mb-4 p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+        <option value="">Select Filter</option>
+        <option value="job_role">Job Role</option>
+        <option value="eligibility">Eligibility</option>
+        <option value="salary">Salary</option>
+      </select>
+      <div id="dynamic-filters"></div>
+
+      <!-- Search Bar -->
+      <div class="mb-6">
+        <input id="searchInput"
+               type="text"
+               placeholder="Search by company name or job role..."
+               class="w-full p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+      </div>
+
+      <!-- Ongoing Companies Section -->
+      <div id="ongoingCompaniesSection">
+        <h2 class="text-xl font-semibold mb-4">Ongoing Companies</h2>
+        {% if ongoing_companies %}
+          {% set unique_job_roles = ongoing_companies | map(attribute='job_role') | list | unique %}
+          {% set unique_eligibilities = ongoing_companies | map(attribute='eligibility') | list | unique %}
+          {% set unique_salaries = ongoing_companies | map(attribute='salary') | list | unique %}
+          {% for company in ongoing_companies %}
+          <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4 hover:shadow-xl hover:scale-105 transform transition-all duration-300 border-2 border-blue-500"
+                 data-name="{{ company.comp_name }}"
+                 data-role="{{ company.job_role }}"
+                 data-eligibility="{{ company.eligibility }}"
+                 data-salary="{{ company.salary }}">
+              <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
+              <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500 hover:underline">{{ company.comp_email }}</a></p>
+              
+              <p>Eligibility: {{ company.eligibility }}</p>
+              <p>Salary: {{ company.salary }}</p>
+              <p>Last Date to Apply: {{ company.end_date.strftime('%Y-%m-%d') }}</p>
+              <!-- Container for Job Role and View Button -->
+              <div class="bg-gray-300 p-4 rounded-md mt-4">
+                <p>Job Role: {{ company.job_role }}</p>
+                <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-all duration-300">
+                  View Details
+                </a>
+              </div>            
             </div>
           {% endfor %}
         {% else %}
-          <p class="text-sm text-gray-500">No companies available.</p>
+          <p class="text-gray-500">No ongoing companies available.</p>
         {% endif %}
       </div>
-
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterOptions = document.getElementById('filter-options');
+      const dynamicFilters = document.getElementById('dynamic-filters');
+      const searchInput = document.getElementById('searchInput');
+
+      function filterCompanies() {
+        const searchText = searchInput.value.toLowerCase();
+        const companyCards = document.querySelectorAll('.company-card');
+
+        companyCards.forEach(card => {
+          const name = card.getAttribute('data-name').toLowerCase();
+          const role = card.getAttribute('data-role').toLowerCase();
+          const eligibility = card.getAttribute('data-eligibility').toLowerCase();
+          const salary = card.getAttribute('data-salary').toLowerCase();
+
+          const filterByJobRole = document.getElementById('job-role')?.value.toLowerCase() || '';
+          const filterByEligibility = document.getElementById('eligibility-filter')?.value.toLowerCase() || '';
+          const filterBySalary = document.getElementById('salary-filter')?.value.toLowerCase() || '';
+
+          const matchesSearch = name.includes(searchText) || role.includes(searchText);
+          const matchesJobRole = !filterByJobRole || role === filterByJobRole;
+          const matchesEligibility = !filterByEligibility || eligibility === filterByEligibility;
+          const matchesSalary = !filterBySalary || salary === filterBySalary;
+
+          card.style.display = matchesSearch && matchesJobRole && matchesEligibility && matchesSalary ? 'block' : 'none';
+        });
+      }
+
+      function updateFilters() {
+        dynamicFilters.innerHTML = '';
+        const filterType = filterOptions.value;
+
+        if (filterType === 'job_role') {
+          dynamicFilters.innerHTML = `
+            <select id="job-role" class="mb-4 p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300" onchange="filterCompanies()">
+              <option value="">All Roles</option>
+              {% for role in unique_job_roles %}
+                <option value="{{ role }}">{{ role }}</option>
+              {% endfor %}
+            </select>
+          `;
+        } else if (filterType === 'eligibility') {
+          dynamicFilters.innerHTML = `
+            <select id="eligibility-filter" class="mb-4 p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300" onchange="filterCompanies()">
+              <option value="">All Eligibility</option>
+              {% for eligibility in unique_eligibilities %}
+                <option value="{{ eligibility }}">{{ eligibility }}</option>
+              {% endfor %}
+            </select>
+          `;
+        } else if (filterType === 'salary') {
+          dynamicFilters.innerHTML = `
+            <select id="salary-filter" class="mb-4 p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300" onchange="filterCompanies()">
+              <option value="">All Salary Ranges</option>
+              {% for salary in unique_salaries %}
+                <option value="{{ salary }}">{{ salary }}</option>
+              {% endfor %}
+            </select>
+          `;
+        }
+
+        dynamicFilters.classList.add('show');
+        filterCompanies();
+      }
+
+      // Expose filterCompanies to the global scope for onchange handlers
+      window.filterCompanies = filterCompanies;
+
+      filterOptions.addEventListener('change', updateFilters);
+      searchInput.addEventListener('input', filterCompanies);
+    });
+  </script>
 </body>
 </html>

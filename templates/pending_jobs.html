@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Job Postings</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <style>
+        #dynamic-filters {
+            display: none;
+        }
+
+        #dynamic-filters.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white h-screen shadow-lg">
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                        <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover" />
+                    </div>
+                    <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
+                </div>
+            </div>
+          
+
+        <!-- Main content -->
+        <div class="container mx-auto p-6 flex-1">
+            <h2 class="text-2xl font-bold mb-4">Pending Job Postings</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="mb-4 px-4 py-2 rounded {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            {% if pending_jobs %}
+                <div class="space-y-4">
+                    {% for job in pending_jobs %}
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <div class="job-card">
+                                <h3>{{ job.title }}</h3>
+                                <p>Company: {{ job.comp_name }}</p>
+                                <p>Description: {{ job.description }}</p>
+                                <p>Requirements: {{ job.requirements }}</p>
+                                <p>Salary: {{ job.salary }}</p>
+                                <p>Location: {{ job.location }}</p>
+                                <p>End Date: {{ job.end_date.strftime('%Y-%m-%d') if job.end_date else 'Not specified' }}</p>
+                                <p>Posted: {{ job.date_posted.strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <form method="POST" action="{{ url_for('approve_job', job_id=job.id) }}" class="inline-block">
+                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('reject_job', job_id=job.id) }}" class="inline-block">
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No pending job postings.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

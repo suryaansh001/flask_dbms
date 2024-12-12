@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Company</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6 max-w-md">
+        <h2 class="text-2xl font-bold mb-4">Register Company</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-4 px-4 py-2 rounded {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('register_company') }}">
+            <div class="mb-4">
+                <label for="company_id" class="block text-sm font-medium text-gray-700">Company ID</label>
+                <input type="number" id="company_id" name="company_id" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name</label>
+                <input type="text" id="company_name" name="company_name" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" name="email" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" name="password" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Register</button>
+        </form>
+        <p class="mt-4 text-sm">
+            Already have an account? <a href="{{ url_for('company_login') }}" class="text-blue-500">Login here</a>.
+        </p>
+    </div>
+</body>
+</html>
