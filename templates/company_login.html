@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Company Login</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-6 max-w-md">
-        <h2 class="text-2xl font-bold mb-4">Company Login</h2>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6">Company Login</h2>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
@@ -17,20 +19,23 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('company_login') }}">
             <div class="mb-4">
                 <label for="company_id" class="block text-sm font-medium text-gray-700">Company ID</label>
-                <input type="number" id="company_id" name="company_id" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+                <input type="number" id="company_id" name="company_id" required class="mt-1 block w-full p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required class="mt-1 block w-full p-2 border rounded shadow-sm">
+                <input type="password" id="password" name="password" required class="mt-1 block w-full p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Login</button>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Login</button>
         </form>
-        <p class="mt-4 text-sm">
-            Don't have an account? <a href="{{ url_for('register_company') }}" class="text-blue-500">Register here</a>.
+
+        <p class="mt-4 text-center text-sm">
+            Don't have an account? <a href="{{ url_for('register_company') }}" class="text-blue-500 hover:text-blue-600">Register here</a>.
         </p>
     </div>
+
 </body>
 </html>

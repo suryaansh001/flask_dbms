@@ -3,29 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Job Postings</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto p-6">
-        <h2 class="text-2xl font-bold mb-4">Available Job Postings</h2>
-        {% if approved_jobs %}
-            <div class="space-y-4">
-                {% for job in approved_jobs %}
-                    <div class="bg-white p-4 rounded-lg shadow-md">
-                        <h3 class="text-lg font-semibold">{{ job.title }}</h3>
-                        <p><strong>Company:</strong> {{ job.comp_name }}</p>
-                        <p><strong>Description:</strong> {{ job.description }}</p>
-                        <p><strong>Requirements:</strong> {{ job.requirements }}</p>
-                        <p><strong>Salary:</strong> {{ job.salary }}</p>
-                        <p><strong>Location:</strong> {{ job.location }}</p>
-                        <p><strong>Contact:</strong> <a href="mailto:{{ job.comp_email }}" class="text-blue-500">{{ job.comp_email }}</a></p>
-                        <p><strong>LinkedIn:</strong> <a href="{{ job.linkedin_id }}" class="text-blue-500" target="_blank">View Company Profile</a></p>
-                    </div>
-                {% endfor %}
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <div class="w-64 bg-white h-screen shadow-lg p-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
+                </div>
+                <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
             </div>
-        {% else %}
-            <p class="text-gray-500">No job postings available at the moment.</p>
-        {% endif %}
+            <nav class="mt-10">
+                <a href="{{ url_for('add_student') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-tasks mr-3"></i>
+                    <span>Add Student</span>
+                </a>
+                <a href="{{ url_for('add_company') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <span>Add Company</span>
+                </a>
+                <a href="{{ url_for('manage_students') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-clock mr-3"></i>
+                    <span>Manage Students</span>
+                </a>
+                <a href="{{ url_for('admin_dashboard') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span>LogOut</span>
+                </a>
+                <!-- New Links for Job Postings -->
+                <a href="{{ url_for('pending_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-hourglass-start mr-3"></i>
+                    <span>Pending Job Postings</span>
+                </a>
+                <a href="{{ url_for('approved_jobs') }}" class="flex items-center p-3 text-gray-700 bg-gray-200">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <span>Approved Job Postings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-6">Available Job Postings</h2>
+
+                {% if approved_jobs %}
+                    <div class="space-y-6">
+                        {% for job in approved_jobs %}
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-semibold">{{ job.title }}</h3>
+                                <p class="mt-2"><strong>Company:</strong> {{ job.comp_name }}</p>
+                                <p class="mt-2"><strong>Description:</strong> {{ job.description }}</p>
+                                <p class="mt-2"><strong>Requirements:</strong> {{ job.requirements }}</p>
+                                <p class="mt-2"><strong>Salary:</strong> {{ job.salary }}</p>
+                                <p class="mt-2"><strong>Location:</strong> {{ job.location }}</p>
+                                <p class="mt-2"><strong>Contact:</strong> <a href="mailto:{{ job.comp_email }}" class="text-blue-500">{{ job.comp_email }}</a></p>
+                                <p class="mt-2"><strong>LinkedIn:</strong> <a href="{{ job.linkedin_id }}" class="text-blue-500" target="_blank">View Company Profile</a></p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 text-center">No job postings available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
 </body>
 </html>

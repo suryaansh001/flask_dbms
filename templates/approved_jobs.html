@@ -1,4 +1,98 @@
+
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Approved Job Postings</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 flex">
+
+  <!-- Sidebar -->
+  <div class="w-64 bg-white h-screen shadow-lg">
+    <div class="p-6 flex items-center space-x-3">
+      <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+        <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
+      </div>
+      <span class="text-xl font-semibold">JK PLACEMENT PORTAL</span>
+    </div>
+    <nav class="mt-10">
+      <a href="{{ url_for('add_student') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-tasks mr-3"></i>
+        <span>Add Student</span>
+      </a>
+      <a href="{{ url_for('add_company') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-check-circle mr-3"></i>
+        <span>Add Company</span>
+      </a>
+      <a href="{{ url_for('manage_students') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-clock mr-3"></i>
+        <span>Manage Students</span>
+      </a>
+      <a href="{{ url_for('admin_dashboard') }}" class="flex items-center p-3 text-gray-700 bg-gray-200">
+        <i class="fas fa-chart-line mr-3"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="{{ url_for('logout') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-cog mr-3"></i>
+        <span>LogOut</span>
+      </a>
+      <!-- New Links for Job Postings -->
+      <a href="{{ url_for('pending_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-hourglass-start mr-3"></i>
+        <span>Pending Job Postings</span>
+      </a>
+      <a href="{{ url_for('approved_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+        <i class="fas fa-check-circle mr-3"></i>
+        <span>Approved Job Postings</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-6">
+    <h2 class="text-2xl font-semibold mb-4">Approved Job Postings</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="p-4 mb-4 rounded {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if approved_jobs %}
+      <div class="space-y-4">
+        {% for job in approved_jobs %}
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold">{{ job.title }}</h3>
+            <p class="mt-2"><strong>Company:</strong> {{ job.comp_name }}</p>
+            <p><strong>Description:</strong> {{ job.description }}</p>
+            <p><strong>Requirements:</strong> {{ job.requirements }}</p>
+            <p><strong>Salary:</strong> {{ job.salary }}</p>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Contact:</strong> <a href="mailto:{{ job.comp_email }}" class="text-blue-500">{{ job.comp_email }}</a></p>
+            <p><strong>LinkedIn:</strong> <a href="{{ job.linkedin_id }}" class="text-blue-500" target="_blank">View Company Profile</a></p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">No approved job postings available.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>
+
+
+
+<!--DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -37,4 +131,4 @@
         {% endif %}
     </div>
 </body>
-</html>
+</html>-->
