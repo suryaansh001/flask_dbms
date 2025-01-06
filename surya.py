@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, flash,session
 import pymysql.cursors
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 from datetime import datetime, timedelta
 
@@ -195,6 +196,7 @@ def placement_records():
 
 
 
+
 @app.route('/task_list')
 def task_list():
     # Fetch company data along with job roles
@@ -212,7 +214,7 @@ def task_list():
             past_companies = []
             
             for company in companies:
-            # Check if end_date is None before comparing
+                # Check if end_date is None before comparing
                 if company['end_date'] is not None:
                     if company['end_date'] < datetime.now():
                         past_companies.append(company)  # Add to past drives if the drive has ended
@@ -224,8 +226,8 @@ def task_list():
                         query = "UPDATE company SET status = %s WHERE comp_id = %s"
                         cursor.execute(query, ("inactive", company['comp_id']))
                         connection.commit()
-                   # Assuming companies with None end_date should be considered ongoing
-
+                else:
+                    ongoing_companies.append(company)  # Assuming companies with None end_date should be considered ongoing
 
     except Exception as e:
         print(f"Error: {e}")
@@ -235,9 +237,7 @@ def task_list():
     finally:
         connection.close()
 
-    return render_template('placementinfo.html', ongoing_companies=ongoing_companies, past_companies=past_companies)
-
-
+    return render_template('placement3.html', ongoing_companies=ongoing_companies, past_companies=past_companies)
 @app.route('/company_details/<int:comp_id>')
 def company_details(comp_id):
     connection = get_db_connection()

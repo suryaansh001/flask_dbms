@@ -111,9 +111,34 @@ def logout():
 
 @app.route('/admin_dashboard')
 @admin_login_required
-def admin_dashboard():
-    return render_template('admin_dashboard.html')
 
+def admin_dashboard():
+    connection = get_db_connection()
+    new_company_requests = []
+    new_student_requests = []
+
+    try:
+        with connection.cursor() as cursor:
+            # Query to fetch pending company requests
+            cursor.execute("""
+                SELECT * FROM admin_company WHERE status = 'pending'
+            """)
+            new_company_requests = cursor.fetchall()
+
+            # Query to fetch pending student queries
+            cursor.execute("""
+                SELECT * FROM admin_students_queries WHERE status = 'pending'
+            """)
+            new_student_requests = cursor.fetchall()
+
+    except Exception as e:
+        flash(f"Error: {e}", "danger")
+    finally:
+        connection.close()
+
+    return render_template('admin_dashboard.html', 
+                           new_company_requests=new_company_requests, 
+                           new_student_requests=new_student_requests)
 @app.route('/add_company', methods=['GET', 'POST'])
 @admin_login_required
 def add_company():
@@ -180,7 +205,7 @@ def manage_students():
 
     return render_template('manageStudent.html', students=students)
 
-@app.route('/edit_student/<int:student_id>', methods=['GET', 'POST'])
+@app.route('/edit_student/<string:student_id>', methods=['GET', 'POST'])
 @admin_login_required
 def edit_student(student_id):
     connection = get_db_connection()
@@ -225,7 +250,7 @@ def edit_student(student_id):
 
     return render_template('editStudent.html', student=student)
 
-@app.route('/remove_student/<int:student_id>', methods=['GET'])
+@app.route('/remove_student/<string:student_id>', methods=['GET'])
 @admin_login_required
 def remove_student(student_id):
     connection = get_db_connection()

@@ -43,10 +43,7 @@
           <i class="fas fa-chart-line mr-3"></i>
           <span>Dashboard</span>
         </a>
-        <a href="{{ url_for('logout') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
-          <i class="fas fa-cog mr-3"></i>
-          <span>LogOut</span>
-        </a>
+
         <!-- New Links for Job Postings -->
         <a href="{{ url_for('pending_jobs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
           <i class="fas fa-hourglass-start mr-3"></i>
@@ -56,6 +53,10 @@
           <i class="fas fa-check-circle mr-3"></i>
           <span>Approved Job Postings</span>
         </a>
+        <a href="{{ url_for('logout') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-cog mr-3"></i>
+          <span>LogOut</span>
+        </a>
       </nav>
     </div>
 
@@ -63,12 +64,73 @@
     <div class="flex-1">
       <div class="container mx-auto p-6">
         <h2 class="text-2xl font-semibold mb-4">Admin Dashboard</h2>
-        <div class="space-x-4">
-          <a href="{{ url_for('add_company') }}" class="bg-blue-500 text-white p-2 rounded">Add Company</a>
-          <!-- Add more dashboard widgets or links as needed -->
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul>
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Pending Company Requests Section -->
+        <h2>Pending Company Requests</h2>
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                    <th>Query ID</th>
+                    <th>Company ID</th>
+                    <th>Company Name</th>
+                    <th>Company Email</th>
+                    <th>Query</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in new_company_requests %}
+                <tr>
+                    <td>{{ request.query_id }}</td>
+                    <td>{{ request.company_id }}</td>
+                    <td>{{ request.company_name }}</td>
+                    <td>{{ request.company_email }}</td>
+                    <td>{{ request.query }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>{{ request.created_at }}</td>
+                    <td>{{ request.updated_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pending Student Queries Section -->
+        <h2>Pending Student Queries</h2>
+        <table class="min-w-full bg-white border border-gray-300 mt-4">
+            <thead>
+                <tr>
+                    <th>Query ID</th>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Student Email</th>
+                    <th>Query</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for query in new_student_requests %}
+                <tr>
+                    <td>{{ query.query_id }}</td>
+                    <td>{{ query.stud_id }}</td>
+                    <td>{{ query.student_name }}</td>
+                    <td>{{ query.student_email }}</td>
+                    <td>{{ query.query }}</td>
+                    <td>{{ query.status }}</td>
+                    <td>{{ query.created_at }}</td>
+                    <td>{{ query.updated_at }}</td></tr>{% endfor %}
+            </tbody></table></div></div></body></html>
+

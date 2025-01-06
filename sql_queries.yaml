@@ -1,0 +1,215 @@
+sql_queries:
+  register_admin:
+    description: "Insert a new admin account into the admin_login table"
+    query: |
+      INSERT INTO admin_login (admin_id, password, email)
+      VALUES (%s, %s, %s)
+
+  admin_login:
+    description: "Retrieve admin details for login"
+    query: |
+      SELECT * FROM admin_login WHERE admin_id = %s
+
+  add_company:
+    description: "Insert a new company into the company table"
+    query: |
+      INSERT INTO company (comp_id, comp_name, contact_no, comp_email, linkedin_id, job_role, description, salary, location)
+      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+
+  company_list:
+    description: "Retrieve the list of companies"
+    query: |
+      SELECT c.comp_id, c.comp_name, c.contact_no, c.comp_email, c.linkedin_id, c.created_at, c.job_role
+      FROM company c
+
+  manage_students:
+    description: "Retrieve the list of all students"
+    query: |
+      SELECT s.stud_id, s.stud_name, s.cgpa, s.portfolio_web, s.github_id, s.skillset,
+             s.contact_no, s.linkedin_id, s.gmail_id, s.course_id, s.created_at, s.updated_at, s.email
+      FROM student s
+
+  edit_student:
+    description: "Retrieve a student's details by their student ID"
+    query: |
+      SELECT s.stud_id, s.stud_name, s.cgpa, s.portfolio_web, s.github_id, s.skillset,
+             s.contact_no, s.linkedin_id, s.gmail_id, s.course_id, s.created_at, s.updated_at, s.email
+      FROM student s WHERE s.stud_id = %s
+
+  update_student:
+    description: "Update a student's details in the student table"
+    query: |
+      UPDATE student
+      SET stud_name = %s, cgpa = %s, portfolio_web = %s, github_id = %s,
+          skillset = %s, contact_no = %s, linkedin_id = %s, gmail_id = %s, course_id = %s, email = %s
+      WHERE stud_id = %s
+
+  remove_student:
+    description: "Delete a student from the student table"
+    query: |
+      DELETE FROM student WHERE stud_id = %s
+
+  add_student:
+    description: 
+      - "Insert a new student's login details into the student_login table"
+      - "Insert a new student into the student table"
+    queries:
+      - |
+        INSERT INTO student_login (student_id, name, email, password, otp, otp_expires_at)
+        VALUES (%s, %s, %s, %s, %s, %s)
+      - |
+        INSERT INTO student (stud_id, stud_name, email)
+        VALUES (%s, %s, %s)
+
+  pending_jobs:
+    description: "Retrieve pending job postings with company info"
+    query: |
+      SELECT 
+        jp.id, 
+        jp.title, 
+        jp.description, 
+        jp.requirements, 
+        jp.salary, 
+        jp.location,
+        jp.end_date,
+        jp.date_posted,
+        c.comp_name,
+        jp.company_id
+      FROM job_posting jp
+      JOIN company c ON jp.company_id = c.comp_id
+      WHERE jp.status = 'pending'
+      ORDER BY jp.date_posted DESC
+
+  approve_job:
+    description: 
+      - "Retrieve the job title for approval"
+      - "Update the job status to 'approved'"
+      - "Update the company status to 'active' and set job role"
+    queries:
+      - |
+        SELECT title 
+        FROM job_posting 
+        WHERE id = %s
+      - |
+        UPDATE job_posting
+        SET status = 'approved'
+        WHERE id = %s
+      - |
+        UPDATE company 
+        SET status = 'active', job_role = %s
+        WHERE comp_id IN (
+          SELECT company_id 
+          FROM job_posting
+          WHERE id = %s
+        )
+
+  reject_job:
+    description: "Reject a job posting and update its status"
+    query: |
+      UPDATE job_posting
+      SET status = 'rejected'
+      WHERE id = %s
+
+  approved_jobs:
+    description: "Retrieve approved job postings with company info"
+    query: |
+      SELECT jp.id, jp.title, jp.description, jp.requirements, jp.salary, jp.location,
+             c.comp_name, c.comp_email, c.linkedin_id
+      FROM job_posting jp
+      JOIN company c ON jp.company_id = c.comp_id
+      WHERE jp.status = 'approved'
+------------------------surya.py------------------------
+queries:
+  # 1. Register Route - Insert Student Login and Student Data
+  register:
+    - insert_student_login:
+        query: |
+          INSERT INTO student_login (student_id, password, email, otp, otp_expires_at, name)
+          VALUES (%s, %s, %s, %s, %s, %s);
+    - insert_student_profile:
+        query: |
+          INSERT INTO student (stud_id, stud_name, email)
+          VALUES (%s, %s, %s);
+
+  # 2. Task List Route - Fetch Companies and Categorize as Ongoing or Past
+  task_list:
+    - fetch_companies:
+        query: |
+          SELECT * FROM company c
+          ORDER BY c.created_at DESC;
+    - update_company_status:
+        query: |
+          UPDATE company SET status = %s WHERE comp_id = %s;
+
+  # 3. Company Details Route - Fetch Company Details by ID
+  company_details:
+    - fetch_company_by_id:
+        query: |
+          SELECT * FROM company WHERE comp_id = %s;
+
+  # 4. Settings Route - Fetch Student Data for Editing
+  settings:
+    - fetch_student_data:
+        query: |
+          SELECT * FROM student WHERE stud_id = %s;
+    - update_student_profile:
+        query: |
+          UPDATE student SET updated_at = NOW(), 
+                            github_id = %s, 
+                            linkedin_id = %s, 
+                            portfolio_web = %s, 
+                            skillset = %s
+          WHERE stud_id = %s;
+
+  # 5. Apply Route - Placeholder for Job Application Logic
+  apply:
+    - placeholder_for_job_application:
+        query: "No SQL query defined."
+
+  # 6. Submit Interview Route - Insert Interview Experience Data
+  submit_interview:
+    - insert_interview_experience:
+        query: |
+          INSERT INTO experience (stud_name, comp_name, exp_text)
+          VALUES (%s, %s, %s);
+
+  # 7. View Interviews Route - Fetch All Interview Experiences
+  view_interviews:
+    - fetch_interviews:
+        query: |
+          SELECT stud_name, comp_name, exp_text FROM experience;
+
+  # 8. Login Route - Verify User Credentials
+  login:
+    - verify_user_credentials:
+        query: |
+          SELECT * FROM student_login WHERE email = %s AND password = %s;
+
+  # 9. Dashboard Route - Fetch User Data and Recent Placement Drives
+  dashboard:
+    - fetch_user_data:
+        query: |
+          SELECT * FROM student_login WHERE email = %s;
+    - fetch_recent_placement_drives:
+        query: |
+          SELECT c.comp_id, c.comp_name, c.contact_no, c.linkedin_id, c.comp_email, c.created_at, c.job_role
+          FROM company c
+          ORDER BY c.created_at DESC
+          LIMIT 5;
+
+  # 10. Logout Route - No SQL query (simply removes the session)
+  logout:
+    - no_sql_query:
+        query: "No SQL query, simply removing the session data."
+-------------------------company.py-------------------------
+CREATE TABLE admin_students (
+    query_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    student_name VARCHAR(255) NOT NULL,
+    student_email VARCHAR(255) NOT NULL,
+    query TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',  -- You can set the default status
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE
+);

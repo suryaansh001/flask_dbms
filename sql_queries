@@ -1,0 +1,22 @@
+CREATE TABLE admin_students_queries (
+    query_id VARCHAR(50) NOT NULL PRIMARY KEY,
+    stud_id VARCHAR(50) NOT NULL,
+    student_name VARCHAR(255) NOT NULL,
+    student_email VARCHAR(255) NOT NULL,
+    query TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',  -- You can set the default status
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (stud_id) REFERENCES student(stud_id) ON DELETE CASCADE
+);
+CREATE TABLE admin_company (
+    query_id INT AUTO_INCREMENT PRIMARY KEY,
+    company_id VARCHAR(50) NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    company_email VARCHAR(255) NOT NULL,
+    query TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',  -- You can set the default status
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES company(comp_id) ON DELETE CASCADE
+);

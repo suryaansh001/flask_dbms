@@ -70,64 +70,65 @@
                placeholder="Search by company name or job role..."
                class="w-full p-2 border rounded shadow-sm hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
       </div>
-<!-- Ongoing Companies Section -->
-<div id="ongoingCompaniesSection">
-  <h2 class="text-xl font-semibold mb-4">Ongoing Companies</h2>
-  {% if ongoing_companies %}
-    {% set unique_job_roles = ongoing_companies | map(attribute='job_role') | list | unique %}
-    {% set unique_eligibilities = ongoing_companies | map(attribute='eligibility') | list | unique %}
-    {% set unique_salaries = ongoing_companies | map(attribute='salary') | list | unique %}
-    {% for company in ongoing_companies %}
-    <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4 hover:shadow-xl hover:scale-105 transform transition-all duration-300 border-2 border-blue-500"
-           data-name="{{ company.comp_name }}"
-           data-role="{{ company.job_role }}"
-           data-eligibility="{{ company.eligibility }}"
-           data-salary="{{ company.salary }}">
-        <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
-        <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500 hover:underline">{{ company.comp_email }}</a></p>
-        
-        <p>Eligibility: {{ company.eligibility }}</p>
-        <p>Salary: {{ company.salary }}</p>
-        <p>Last Date to Apply: {{ company.end_date.strftime('%Y-%m-%d') }}</p>
-        <!-- Container for Job Role and View Button -->
-        <div class="bg-gray-300 p-4 rounded-md mt-4">
-          <p>Job Role: {{ company.job_role }}</p>
-          <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-all duration-300">
-            View Details
-          </a>
-        </div>            
-      </div>
-    {% endfor %}
-    <div id="pastCompaniesSection">
-      <h2 class="text-xl font-semibold mb-4">Past Companies</h2>
-      {% if past_companies %}
-        {% for company in past_companies %}
-          <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4"
-               data-name="{{ company.comp_name }}"
-               data-role="{{ company.job_role }}"
-               data-eligibility="{{ company.eligibility }}"
-               data-salary="{{ company.salary }}" aria-readonly="true">
-            <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
-            <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500">{{ company.comp_email }}</a></p>
-            <p>Job Role: {{ company.job_role }}</p>
-            <p>Eligibility: {{ company.eligibility }}</p>
-            <p>Salary: {{ company.salary }}</p>
-            <p>Last Date to Apply: {{ company.end_date.strftime('%Y-%m-%d') }}</p>
-            <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="text-blue-500 underline">
-              View Details
-            </a>
+
+      <!-- Ongoing Companies Section -->
+      <div id="ongoingCompaniesSection">
+        <h2 class="text-xl font-semibold mb-4">Ongoing Companies</h2>
+        {% if ongoing_companies %}
+          {% set unique_job_roles = ongoing_companies | map(attribute='job_role') | list | unique %}
+          {% set unique_eligibilities = ongoing_companies | map(attribute='eligibility') | list | unique %}
+          {% set unique_salaries = ongoing_companies | map(attribute='salary') | list | unique %}
+          {% for company in ongoing_companies %}
+          <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4 hover:shadow-xl hover:scale-105 transform transition-all duration-300 border-2 border-blue-500"
+                 data-name="{{ company.comp_name }}"
+                 data-role="{{ company.job_role }}"
+                 data-eligibility="{{ company.eligibility }}"
+                 data-salary="{{ company.salary }}">
+              <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
+              <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500 hover:underline">{{ company.comp_email }}</a></p>
+              
+              <p>Eligibility: {{ company.eligibility }}</p>
+              <p>Salary: {{ company.salary }}</p>
+              <p>Last Date to Apply: {% if company.end_date %}{{ company.end_date.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</p>
+              <!-- Container for Job Role and View Button -->
+              <div class="bg-gray-300 p-4 rounded-md mt-4">
+                <p>Job Role: {{ company.job_role }}</p>
+                <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-all duration-300">
+                  View Details
+                </a>
+              </div>            
+            </div>
+          {% endfor %}
+          <div id="pastCompaniesSection">
+            <h2 class="text-xl font-semibold mb-4">Past Companies</h2>
+            {% if past_companies %}
+              {% for company in past_companies %}
+                <div class="company-card bg-white p-4 rounded-lg shadow-md mb-4 readonly"
+                     data-name="{{ company.comp_name }}"
+                     data-role="{{ company.job_role }}"
+                     data-eligibility="{{ company.eligibility }}"
+                     data-salary="{{ company.salary }}" aria-readonly="true">
+                  <h3 class="text-lg font-semibold">{{ company.comp_name }}</h3>
+                  <p>Email: <a href="mailto:{{ company.comp_email }}" class="text-blue-500">{{ company.comp_email }}</a></p>
+                  <p>Job Role: {{ company.job_role }}</p>
+                  <p>Eligibility: {{ company.eligibility }}</p>
+                  <p>Salary: {{ company.salary }}</p>
+                  <p>Last Date to Apply: {% if company.end_date %}{{ company.end_date.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</p>
+                  <a href="{{ url_for('company_details', comp_id=company.comp_id) }}" class="text-blue-500 underline">
+                    View Details
+                  </a>
+                </div>
+              {% endfor %}              
+            {% else %}
+              <p class="text-gray-500">No past companies available.</p>
+            {% endif %}
           </div>
-        {% endfor %}              
-      {% else %}
-        <p class="text-gray-500">No past companies available.</p>
-      {% endif %}
+        {% else %}
+          <p class="text-gray-500">No ongoing companies available.</p>
+        {% endif %}
+      </div>
     </div>
-  {% else %}
-    <p class="text-gray-500">No ongoing companies available.</p>
-  {% endif %}
-</div>
-</div>
-</div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
