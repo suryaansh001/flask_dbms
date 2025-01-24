@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Raise a Query</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: grey;
+        }
+        .tab.active {
+            color: black;
+            border-bottom: 2px solid blue;
+        }
+        .form-container,
+        .view-queries {
+            display: none;
+        }
+        .form-container.active,
+        .view-queries.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-y-auto">
+        <div class="w-64 bg-white h-screen shadow-lg">
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-circle text-white"></i>
+                    </div>
+                    <span class="text-xl font-semibold">{{ stud_id }}</span>
+                </div>
+            </div>
+            <nav class="mt-10">
+                <a href="{{ url_for('dashboard') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('task_list') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <span>Placement Records</span>
+                </a>
+                <a href="{{ url_for('apply') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    <span>Apply for Jobs</span>
+                </a>
+                <a href="{{ url_for('settings') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-cogs mr-3"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+        <div class="flex flex-1 flex-col p-6 overflow-y-auto">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-4">
+                {% for category, message in messages %}
+                <div class="p-4 mb-4 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="tab-container">
+                <div class="tab active" id="tab-raise-query" onclick="showSection('form-container')">Raise a Query</div>
+                <div class="tab" id="tab-view-queries" onclick="showSection('view-queries')">View Queries</div>
+            </div>
+            <div class="form-container active" id="form-container">
+                <h3 class="text-lg font-semibold mb-4">Submit Your Query</h3>
+                <form method="POST" action="{{ url_for('query') }}">
+                    <div class="mb-4">
+                        <label for="stud_name" class="block text-gray-700">
+                            Student Name: {{ user['stud_name'] }}
+                        </label>
+                    </div>
+                    <div class="mb-4">
+                        <label for="stud_query" class="block text-gray-700">Query</label>
+                        <input type="text" id="stud_query" name="stud_query" class="mt-2 p-2 border rounded w-full" required />
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+                </form>
+            </div>
+            <div class="view-queries" id="view-queries">
+                <h3 class="text-lg font-semibold mb-4">Your Previous Queries</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 border-b">Query</th>
+                                <th class="px-4 py-2 border-b">Reply</th>
+                                <th class="px-4 py-2 border-b text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for query in queries %}
+                            <tr>
+                                <td class="px-4 py-2 border-b">{{ query.query }}</td>
+                                <td class="px-4 py-2 border-b">{{ query.reply }}</td>
+                                <td class="px-4 py-2 border-b text-right">
+                                    <span class="px-2 py-1 rounded-full {{ 'bg-red-500 text-white' if query.status == 'pending' else 'bg-green-500 text-white' }}">
+                                        {{ query.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not queries %}
+                    <p class="text-gray-500 mt-4">No queries found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            if (sectionId === 'form-container') {
+                document.getElementById('tab-raise-query').classList.add('active');
+            } else {
+                document.getElementById('tab-view-queries').classList.add('active');
+            }
+            document.querySelectorAll('.form-container, .view-queries').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

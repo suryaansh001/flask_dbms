@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Applicants</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+      <!-- Sidebar -->
+      <div class="w-64 bg-white h-screen shadow-lg">
+        <div class="p-6">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+              <img src="{{ url_for('static', filename='LOGO.jpg') }}" alt="Logo" class="w-full h-full object-cover"/>
+            </div>
+            <span class="text-xl font-semibold">JK COMPANY DASHBOARD</span>
+          </div>
+        </div>
+        <nav class="mt-10">
+          <a href="{{ url_for('dashboard') }}" class="block py-2 px-6 bg-white -500 text-black font-semibold">Dashboard</a>
+          <a href="{{ url_for('view_applicants') }}" class="block py-2 px-6 bg-white -500 text-black font-semibold">View Applicants</a>
+          <a href="{{ url_for('query') }}" class="block py-2 px-6 bg-white -500 text-black font-semibold"> Query </a>
+          <a href="{{ url_for('company_logout') }}" class="block py-2 px-6 bg-white -500 text-black font-semibold">LogOut</a>
+          
+        </nav>
+      </div>
+  
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-semibold mb-4">Job Applicants</h1>
+        
+        <div class="mb-4">
+            <input type="text" id="nameFilter" placeholder="Search by name" class="p-2 border border-gray-300 rounded mr-2"/>
+            <input type="text" id="roleFilter" placeholder="Search by job role" class="p-2 border border-gray-300 rounded mr-2"/>
+            <input type="text" id="statusFilter" placeholder="Search by status" class="p-2 border border-gray-300 rounded mr-2"/>
+            <input type="date" id="dateFilter" class="p-2 border border-gray-300 rounded"/>
+        </div>
+    
+        <table class="min-w-full bg-white border border-gray-300" id="applicantsTable">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 border-b">Applicant ID</th>
+                    <th class="px-4 py-2 border-b">Student Name</th>
+                    <th class="px-4 py-2 border-b">Job Role</th>
+                    <th class="px-4 py-2 border-b">Resume</th>
+                    <th class="px-4 py-2 border-b">Application Status</th>
+                    <th class="px-4 py-2 border-b">Application Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td class="px-4 py-2 border-b">{{ application.stud_id }}</td>
+                    <td class="px-4 py-2 border-b">{{ application.studname }}</td>
+                    <td class="px-4 py-2 border-b">{{ application.jobrole }}</td>
+                    <td class="px-4 py-2 border-b"><a href="{{ application.resume }}" class="text-blue-500">View Resume</a></td>
+                    <td class="px-4 py-2 border-b">{{ application.application_status }}</td>
+                    <td class="px-4 py-2 border-b">{{ application.application_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        {% if not applications %}
+        <p>No applicants found.</p>
+        {% endif %}
+    </div>
+    
+    <script>
+    // JavaScript for filtering
+    document.querySelectorAll('#nameFilter, #roleFilter, #statusFilter, #dateFilter').forEach(input => {
+        input.addEventListener('keyup', filterApplicants);
+    });
+    
+    function filterApplicants() {
+        const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+        const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        const dateFilter = document.getElementById('dateFilter').value;
+    
+        const rows = document.querySelectorAll('#applicantsTable tbody tr');
+    
+        rows.forEach(row => {
+            const name = row.cells[1].textContent.toLowerCase(); // Student Name
+            const jobRole = row.cells[2].textContent.toLowerCase(); // Job Role
+            const status = row.cells[4].textContent.toLowerCase(); // Application Status
+            const date = row.cells[5].textContent; // Application Date
+    
+            const matchesName = name.includes(nameFilter);
+            const matchesRole = jobRole.includes(roleFilter);
+            const matchesStatus = status.includes(statusFilter);
+            const matchesDate = date.includes(dateFilter);
+    
+            if (matchesName && matchesRole && matchesStatus && (dateFilter === '' || matchesDate)) {
+                row.style.display = ''; // Show row
+            } else {
+                row.style.display = 'none'; // Hide row
+            }
+        });
+    }
+    </script>
+    

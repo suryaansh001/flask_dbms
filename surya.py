@@ -196,48 +196,54 @@ def placement_records():
 
 
 
-
 @app.route('/task_list')
 def task_list():
-    # Fetch company data along with job roles
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
-            query = """
-            SELECT * FROM company c
-            ORDER BY c.created_at DESC
+            # Fetch ongoing and past companies based on job_posting status and end_date
+            ongoing_query = """
+                SELECT c.*, jp.title AS job_role 
+                FROM company c
+                JOIN job_posting jp ON c.comp_id = jp.company_id
+                WHERE jp.status = 'approved' AND (jp.end_date IS NULL OR jp.end_date >= NOW())
+                ORDER BY c.created_at DESC
             """
-            cursor.execute(query)
-            companies = cursor.fetchall()
+            cursor.execute(ongoing_query)
+            ongoing_companies = cursor.fetchall()
 
-            ongoing_companies = []
-            past_companies = []
-            
-            for company in companies:
-                # Check if end_date is None before comparing
-                if company['end_date'] is not None:
-                    if company['end_date'] < datetime.now():
-                        past_companies.append(company)  # Add to past drives if the drive has ended
-                    else:
-                        ongoing_companies.append(company)  # Add to ongoing drives if the drive is active
-                    
-                    # Update status to 'inactive' for past drives
-                    if company['end_date'] < datetime.now() and company['status'] != 'inactive':
-                        query = "UPDATE company SET status = %s WHERE comp_id = %s"
-                        cursor.execute(query, ("inactive", company['comp_id']))
-                        connection.commit()
-                else:
-                    ongoing_companies.append(company)  # Assuming companies with None end_date should be considered ongoing
+            past_query = """
+                SELECT c.*, jp.title AS job_role 
+                FROM company c
+                JOIN job_posting jp ON c.comp_id = jp.company_id
+                WHERE jp.status = 'approved' AND jp.end_date < NOW()
+                ORDER BY c.created_at DESC
+            """
+            cursor.execute(past_query)
+            past_companies = cursor.fetchall()
+
+            # Update past company statuses to 'inactive'
+            update_query = """
+                UPDATE company 
+                SET status = 'inactive'
+                WHERE comp_id IN (
+                    SELECT company_id 
+                    FROM job_posting
+                    WHERE status = 'approved' AND end_date < NOW()
+                )
+            """
+            cursor.execute(update_query)
+            connection.commit()
 
     except Exception as e:
-        print(f"Error: {e}")
-        flash('Error fetching task list. Please try again.', 'error')
-        ongoing_companies = []
-        past_companies = []
+        connection.rollback()
+        flash(f"Error fetching task list: {e}", "danger")
+        ongoing_companies, past_companies = [], []
     finally:
         connection.close()
 
     return render_template('placement3.html', ongoing_companies=ongoing_companies, past_companies=past_companies)
+
 @app.route('/company_details/<int:comp_id>')
 def company_details(comp_id):
     connection = get_db_connection()
@@ -427,11 +433,15 @@ def view_interviews():
     finally:
         connection.close()
 
-
+@app.context_processor
+def inject_stud_id():
+    return dict(stud_id=session.get('stud_id'))
 
 
 
 # Flask config for MySQL connection using environment variables
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -457,6 +467,31 @@ def login():
             connection.close()
     
     return render_template('login.html')
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+    # if request.method == 'POST':
+    #     email = request.form['email']
+    #     password = request.form['password']
+        
+    #     connection = get_db_connection()
+    #     try:
+    #         with connection.cursor() as cursor:
+    #             # Query to verify user credentials
+    #             query = "SELECT * FROM student_login WHERE email = %s AND password = %s"
+    #             cursor.execute(query, (email, password))
+    #             user = cursor.fetchone()
+
+    #             if user:
+    #                 # Store the email and stud_id in the session
+    #                 session['email'] = email
+    #                 session['stud_id'] = user['student_id']  # Store the student ID
+    #                 return redirect(url_for('dashboard'))
+    #             else:
+    #                 flash('Invalid email or password')
+    #     finally:
+    #         connection.close()
+    
+    # return render_template('login.html')
 
 
 # @app.route('/dashboard')
@@ -532,8 +567,128 @@ def dashboard():
         return redirect(url_for('login'))  # Optionally redirect on error
     finally:
         connection.close()  # Ensure the connection is closed
+# @app.route('/dashboard')
+# def dashboard():
+#     email = session.get('email')  # Get email from the session
+#     if not email:
+#         flash('You must be logged in to view the dashboard.')
+#         return redirect(url_for('login'))
 
+#     connection = get_db_connection()  # Get database connection
+#     try:
+#         with connection.cursor() as cursor:  # Ensure result is returned as a simple tuple
+#             # Query to get the user details based on the email
+#             query = "SELECT * FROM student_login WHERE email = %s"
+#             cursor.execute(query, (email,))
+#             user = cursor.fetchone()  # Fetch user record
 
+#             if not user:
+#                 flash("User not found.", "error")
+#                 return redirect(url_for('login'))
+
+#             # Fetch the 5 most recent placement drives
+#             placement_drives_query = """
+#             SELECT c.comp_id, c.comp_name, c.contact_no, c.linkedin_id, c.comp_email, c.created_at, c.job_role
+#             FROM company c
+#             ORDER BY c.created_at DESC
+#             LIMIT 5
+#             """
+#             cursor.execute(placement_drives_query)
+#             placement_drives = cursor.fetchall()  # Fetch 5 most recent placement drives
+
+#             # Hardcoded sample data for placement counts in a list format (no dictionary)
+#             placement_counts = [
+#                 ("Amazon", 40),
+#                 ("Flipkart", 13),
+#                 ("FUDR", 23),
+#                 ("Others", 24)  # Remaining percentage
+#             ]
+
+#             # Prepare the data for the pie chart: a simple list
+#             chart_labels = [count[0] for count in placement_counts]
+#             chart_data = [count[1] for count in placement_counts]
+
+#             if not placement_drives:
+#                 flash("No recent placement drives available.", "info")
+
+#             return render_template('dashboard.html', user=user, placement_drives=placement_drives, chart_labels=chart_labels, chart_data=chart_data)
+
+#     except Exception as e:
+#         flash(f"An error occurred: {str(e)}", "error")
+#         return redirect(url_for('login'))  # Optionally redirect on error
+#     finally:
+#         connection.close()  # Ensure the connection is closed
+
+@app.route('/student_query_submit', methods=['GET', 'POST'])
+def query():
+    stud_id = session.get('stud_id')
+    if not stud_id:
+        flash('Please login first', 'danger')
+        return redirect(url_for('login'))
+
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Fetch user details
+            cursor.execute("SELECT * FROM student WHERE stud_id = %s", (stud_id,))
+            user = cursor.fetchone()
+
+            if request.method == 'POST':
+                stud_query = request.form['stud_query']
+                insert_query = """
+                INSERT INTO student_queries (stud_id, query) 
+                VALUES (%s, %s)
+                """
+                cursor.execute(insert_query, (stud_id, stud_query))
+                connection.commit()
+                flash('Query submitted successfully!', 'success')
+                return redirect(url_for('query'))
+
+            # Fetch previous queries
+            cursor.execute("""
+            SELECT query, status FROM student_queries WHERE stud_id = %s
+            """, (stud_id,))
+            queries = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        flash('There was an error submitting your query. Please try again.', 'danger')
+        queries = []
+    finally:
+        connection.close()
+
+    return render_template('student_query.html', user=user, queries=queries)
+
+@app.route('/queries')
+def view_queries():
+    stud_id = session.get('stud_id')
+    if not stud_id:
+        flash('Please login first', 'danger')
+        return redirect(url_for('login'))
+
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Fetch user details
+            cursor.execute("SELECT * FROM student WHERE stud_id = %s", (stud_id,))
+            user = cursor.fetchone()
+
+            # Fetch queries and replies
+            cursor.execute("""
+            SELECT query, reply, status 
+            FROM student_queries 
+            WHERE stud_id = %s
+            """, (stud_id,))
+            queries = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        flash('There was an error fetching your queries. Please try again.', 'danger')
+        queries = []
+    finally:
+        connection.close()
+
+    return render_template('view_queries.html', user=user, queries=queries)
 
 @app.route('/logout')
 def logout():

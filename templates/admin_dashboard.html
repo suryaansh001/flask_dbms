@@ -76,61 +76,71 @@
         {% endwith %}
 
         <!-- Pending Company Requests Section -->
-        <h2>Pending Company Requests</h2>
+        <h2 class="text-xl font-semibold mb-4">Pending Company Requests</h2>
         <table class="min-w-full bg-white border border-gray-300">
             <thead>
                 <tr>
-                    <th>Query ID</th>
-                    <th>Company ID</th>
-                    <th>Company Name</th>
-                    <th>Company Email</th>
-                    <th>Query</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
+                    <th class="px-4 py-2 border-b">Query ID</th>
+                    <th class="px-4 py-2 border-b">Company ID</th>
+                    <th class="px-4 py-2 border-b">Company Name</th>
+                    <th class="px-4 py-2 border-b">Company Email</th>
+                    <th class="px-4 py-2 border-b">Query</th>
+                    <th class="px-4 py-2 border-b">Status</th>
+                    <th class="px-4 py-2 border-b">Created At</th>
+                    <th class="px-4 py-2 border-b">Updated At</th>
                 </tr>
             </thead>
             <tbody>
                 {% for request in new_company_requests %}
                 <tr>
-                    <td>{{ request.query_id }}</td>
-                    <td>{{ request.company_id }}</td>
-                    <td>{{ request.company_name }}</td>
-                    <td>{{ request.company_email }}</td>
-                    <td>{{ request.query }}</td>
-                    <td>{{ request.status }}</td>
-                    <td>{{ request.created_at }}</td>
-                    <td>{{ request.updated_at }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.query_id }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.company_id }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.company_name }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.company_email }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.query }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.status }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.created_at }}</td>
+                    <td class="px-4 py-2 border-b">{{ request.updated_at }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <!-- Pending Student Queries Section -->
-        <h2>Pending Student Queries</h2>
-        <table class="min-w-full bg-white border border-gray-300 mt-4">
+        <h2 class="text-xl font-semibold mt-10 mb-4">Pending Student Queries</h2>
+        <table class="min-w-full bg-white border border-gray-300">
             <thead>
                 <tr>
-                    <th>Query ID</th>
-                    <th>Student ID</th>
-                    <th>Student Name</th>
-                    <th>Student Email</th>
-                    <th>Query</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
+                    <th class="px-4 py-2 border-b">Query ID</th>
+                    <th class="px-4 py-2 border-b">Student ID</th>
+                    <th class="px-4 py-2 border-b">Query</th>
+                    <th class="px-4 py-2 border-b">Status</th>
+                    <th class="px-4 py-2 border-b">Reply</th>
+                    <th class="px-4 py-2 border-b">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for query in new_student_requests %}
+                {% for query in student_queries %}
                 <tr>
-                    <td>{{ query.query_id }}</td>
-                    <td>{{ query.stud_id }}</td>
-                    <td>{{ query.student_name }}</td>
-                    <td>{{ query.student_email }}</td>
-                    <td>{{ query.query }}</td>
-                    <td>{{ query.status }}</td>
-                    <td>{{ query.created_at }}</td>
-                    <td>{{ query.updated_at }}</td></tr>{% endfor %}
-            </tbody></table></div></div></body></html>
-
+                    <td class="px-4 py-2 border-b">{{ query.query_id }}</td>
+                    <td class="px-4 py-2 border-b">{{ query.stud_id }}</td>
+                    <td class="px-4 py-2 border-b">{{ query.query }}</td>
+                    <td class="px-4 py-2 border-b">
+                        <select class="border rounded p-1">
+                            <option value="pending" {% if query.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="resolved" {% if query.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-2 border-b">{{ query.reply }}</td>
+                    <td class="px-4 py-2 border-b">
+                        <a href="{{ url_for('reply_query', query_id=query.query_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Reply</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

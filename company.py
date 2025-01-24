@@ -40,7 +40,7 @@ def get_db_connection():
 @app.route('/register_company', methods=['GET', 'POST'])
 def register_company():
     if request.method == 'POST':
-        company_id = int(request.form['company_id'])
+        company_id = request.form['company_id']
         company_name = request.form['company_name']
         email = request.form['email']
         password = request.form['password']  # Plain text password
@@ -73,7 +73,7 @@ def register_company():
 @app.route('/company_login', methods=['GET', 'POST'])
 def company_login():
     if request.method == 'POST':
-        company_id = int(request.form['company_id'])
+        company_id = request.form['company_id']
         password = request.form['password']
 
         connection = get_db_connection()
@@ -86,7 +86,7 @@ def company_login():
                     session['company_id'] = company['company_id']
                     session['company_name'] = company['company_name']
                     flash("Login Successful!", "success")
-                    return redirect(url_for('submit_job'))
+                    return redirect(url_for('dashboard'))
                 else:
                     flash("Invalid Company ID or password.", "danger")
         except Exception as e:
@@ -102,10 +102,38 @@ def company_logout():
     session.pop('company_name', None)
     flash("You have been logged out.", "info")
     return redirect(url_for('company_login'))
-
 @app.route('/')
-def home():
-    return render_template('company_login.html')
+def index():
+    return redirect(url_for('company_login'))
+@app.route('/view_applicants')
+def view_applicants():
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM job_application")
+        job_applications = cursor.fetchall()
+    connection.close()
+
+    return render_template('view_applicants_company.html', job_applications=job_applications)
+@app.route('/query', methods=['GET', 'POST'])
+def query():
+    if request.method == 'POST':
+        query = request.form['query']
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
+        connection.close()
+        return render_template('query.html', query=query, results=results)
+    return render_template('query.html')
+@app.route('/dashboard')
+def dashboard():
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id, title, description, requirements, salary, location, end_date, date_posted, status FROM job_posting")
+        job_postings = cursor.fetchall()
+    connection.close()
+
+    return render_template('company_dashboard.html', job_postings=job_postings)
 @app.route('/submit_job', methods=['GET', 'POST'])
 def submit_job():
     if 'company_id' not in session:
@@ -162,5 +190,6 @@ def submit_job():
             connection.close()
 
     return render_template('submit_job.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

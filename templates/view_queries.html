@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Queries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-6">Your Queries</h1>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Student Details</h2>
+            <p><strong>Name:</strong> {{ user.stud_name }}</p>
+            <p><strong>Email:</strong> {{ user.stud_email }}</p>
+        </div>
+        <div class="mt-6">
+            <h2 class="text-xl font-semibold mb-4">Your Queries and Replies</h2>
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b">Query</th>
+                        <th class="px-4 py-2 border-b">Reply</th>
+                        <th class="px-4 py-2 border-b">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for query in queries %}
+                    <tr>
+                        <td class="px-4 py-2 border-b">{{ query.query }}</td>
+                        <td class="px-4 py-2 border-b">{{ query.reply }}</td>
+                        <td class="px-4 py-2 border-b">{{ query.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if not queries %}
+            <p class="text-gray-500 mt-4">No queries found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

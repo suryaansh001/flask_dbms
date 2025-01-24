@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply to Query</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-6">Reply to Query</h1>
+        <form method="POST" action="{{ url_for('reply_query', query_id=query.query_id) }}">
+            <div class="mb-4">
+                <label for="stud_name" class="block text-gray-700">Student Name:</label>
+                <input type="text" id="stud_name" name="stud_name" value="{{ query.stud_name }}" class="mt-2 p-2 border rounded w-full" readonly>
+            </div>
+            
+            <div class="mb-4">
+                <label for="query" class="block text-gray-700">Query:</label>
+                <textarea id="query" name="query" class="mt-2 p-2 border rounded w-full" readonly>{{ query.query }}</textarea>
+            </div>
+            <div class="mb-4">
+                <label for="reply" class="block text-gray-700">Reply:</label>
+                <textarea id="reply" name="reply" class="mt-2 p-2 border rounded w-full">{{ query.reply }}</textarea>
+            </div>
+            <div class="mb-4">
+                <label for="status" class="block text-gray-700">Status:</label>
+                <select id="status" name="status" class="mt-2 p-2 border rounded w-full">
+                    <option value="pending" {% if query.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="resolved" {% if query.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Reply</button>
+        </form>
+    </div>
+</body>
+</html>

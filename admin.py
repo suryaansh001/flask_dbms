@@ -109,36 +109,52 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for('admin_login'))
 
+@app.route('/reply_query/<int:query_id>', methods=['GET', 'POST'])
+@admin_login_required
+def reply_query(query_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            if request.method == 'POST':
+                reply = request.form['reply']
+                status = request.form['status']
+                cursor.execute("""
+                    UPDATE student_queries
+                    SET reply = %s, status = %s
+                    WHERE query_id = %s
+                """, (reply, status, query_id))
+                connection.commit()
+                flash('Reply submitted successfully!', 'success')
+                return redirect(url_for('admin_dashboard'))
+
+            cursor.execute("""
+                SELECT sq.query_id, sq.stud_id, sq.query, sq.status, sq.reply, sq.created_at, s.stud_name, s.email
+                FROM student_queries sq
+                JOIN student s ON sq.stud_id = s.stud_id
+                WHERE sq.query_id = %s
+            """, (query_id,))
+            query = cursor.fetchone()
+    finally:
+        connection.close()
+
+    return render_template('reply_query.html', query=query)
 @app.route('/admin_dashboard')
 @admin_login_required
 
 def admin_dashboard():
+    
     connection = get_db_connection()
-    new_company_requests = []
-    new_student_requests = []
-
     try:
         with connection.cursor() as cursor:
-            # Query to fetch pending company requests
             cursor.execute("""
-                SELECT * FROM admin_company WHERE status = 'pending'
+                SELECT * FROM student_queries
             """)
-            new_company_requests = cursor.fetchall()
-
-            # Query to fetch pending student queries
-            cursor.execute("""
-                SELECT * FROM admin_students_queries WHERE status = 'pending'
-            """)
-            new_student_requests = cursor.fetchall()
-
-    except Exception as e:
-        flash(f"Error: {e}", "danger")
+            student_queries = cursor.fetchall()
     finally:
         connection.close()
 
-    return render_template('admin_dashboard.html', 
-                           new_company_requests=new_company_requests, 
-                           new_student_requests=new_student_requests)
+    return render_template('admin_dashboard.html', student_queries=student_queries)
+
 @app.route('/add_company', methods=['GET', 'POST'])
 @admin_login_required
 def add_company():
@@ -368,9 +384,9 @@ def approve_job(job_id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
-            # Fetch job title
+            # Fetch job details
             cursor.execute("""
-                SELECT title 
+                SELECT title, company_id, end_date, description, salary, location
                 FROM job_posting 
                 WHERE id = %s
             """, (job_id,))
@@ -379,7 +395,20 @@ def approve_job(job_id):
                 flash("Job posting not found.", "danger")
                 return redirect(url_for('pending_jobs'))
 
-            title = job['title']
+            title, company_id, end_date, description, salary, location = job['title'], job['company_id'], job['end_date'], job['description'], job['salary'], job['location']
+
+            # Fetch company details
+            cursor.execute("""
+                SELECT comp_name, contact_no, comp_email, linkedin_id
+                FROM company
+                WHERE comp_id = %s
+            """, (company_id,))
+            company = cursor.fetchone()
+            if not company:
+                flash("Company not found.", "danger")
+                return redirect(url_for('pending_jobs'))
+
+            comp_name, contact_no, comp_email, linkedin_id = company['comp_name'], company['contact_no'], company['comp_email'], company['linkedin_id']
 
             # Update job status
             cursor.execute("""
@@ -388,28 +417,34 @@ def approve_job(job_id):
                 WHERE id = %s
             """, (job_id,))
             
-            # Update company status and job role
+            # Insert into company if not already present
             cursor.execute("""
-                UPDATE company 
-                SET status = 'active', job_role = %s
-                WHERE comp_id IN (
-                    SELECT company_id 
-                    FROM job_posting
-                    WHERE id = %s
-                )
-            """, (title, job_id))
-            
+                INSERT INTO company (comp_id, comp_name, contact_no, comp_email, linkedin_id, job_role, description, salary, location, end_date, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'active')
+                ON DUPLICATE KEY UPDATE 
+                    comp_name = VALUES(comp_name), 
+                    contact_no = VALUES(contact_no), 
+                    comp_email = VALUES(comp_email), 
+                    linkedin_id = VALUES(linkedin_id), 
+                    job_role = VALUES(job_role), 
+                    description = VALUES(description), 
+                    salary = VALUES(salary), 
+                    location = VALUES(location), 
+                    end_date = VALUES(end_date), 
+                    status = 'active'
+            """, (company_id, comp_name, contact_no, comp_email, linkedin_id, title, description, salary, location, end_date))
             connection.commit()
-            flash("Job posting approved successfully.", "success")
-            flash("Company status updated to active", "success")
+            flash("Job posting approved successfully and added to companies.", "success")
             
-    except Exception as e:  
+    except Exception as e:
         connection.rollback()
         flash(f"Error approving job posting: {e}", "danger")
     finally:
         connection.close()
 
     return redirect(url_for('pending_jobs'))
+
+#viewing the student queries
 
 @app.route('/reject_job/<int:job_id>', methods=['POST'])
 @admin_login_required
